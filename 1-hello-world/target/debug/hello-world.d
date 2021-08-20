@@ -1,1 +1,1 @@
-/home/navin/repos/LearnRust/hello-world/target/debug/hello-world: /home/navin/repos/LearnRust/hello-world/src/main.rs
+/home/navin/repos/LearnRust/1-hello-world/target/debug/hello-world: /home/navin/repos/LearnRust/1-hello-world/src/main.rs
