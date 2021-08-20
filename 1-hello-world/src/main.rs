@@ -1,3 +1,6 @@
+//the weird structure here is due to the command "cargo new project_name" , you can also
+//simply use rustc to compile simply the program
+
 macro_rules! print_pi{
     ($a:expr)=>{
         {
