@@ -23,7 +23,14 @@ fn main() {
         }
 
     }
+    //if / else constructs\
 
-    
+    let choice : i32 = 234;
+    if choice % 2!=0 {
+        println!("{} is a odd number ",choice);
+    }
+    else{
+        println!("{} is a even number ",choice);
+    }
 
 }
