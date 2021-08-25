@@ -49,9 +49,13 @@ fn main() {
     }
     println!("");
     println!("Values of 1st array : ");
-    for i in arr1{ //arrays are iterrable in rust too
-        print!("{} ",i);
+    for i in (0..arr1.len()){ //arrays are iterrable in rust too
+        print!("{} ",arr1[i]);
         io::stdout().flush();
+    }
+    //an example for enumerate : 
+    for (i,j) in (5..10).enumerate(){
+        println!("i : {} , j:{}",i,j);
     }
     println!("");
     //now lets talk about slices , slices are simply another "view" of the array
