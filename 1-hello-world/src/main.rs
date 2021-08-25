@@ -41,4 +41,9 @@ fn main() {
     //mild intro to macros and variables
     let pi=3.1415926535;
     print_pi!(pi);
+    let pi_addr : *const f64 = &pi;
+    println!("Adrr of pi var : {:?}",pi_addr);
+    unsafe{
+    println!("Trying to deref using * : {}",*pi_addr);
+    }
 }
