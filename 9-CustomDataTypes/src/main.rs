@@ -31,4 +31,12 @@ fn main() {
 
     let student1 = Student{details : navin , dept : String::from("CSE"), passoutyear : 204};
     println!("Details of a strcut whcih has a struct within it :\n {:}",student1);
+    //structs cam also be broken down using the let keyword
+    
+    let new_person = Person{name : String::from("new guy"), age : 123};
+    let Person{name : new_name , age : new_age}=new_person;
+    println!("After destructureing : {} {}",new_name,new_age);
+    //Note : I did not use the struct by the name of navin cus , navin was suposedly "moved"
+    //in line 32 , and destructuring a moved struct is a big nono in rust
+    //println!("{:?}",new_person); gives an error cus "new_person" was moved in line 37
 }
