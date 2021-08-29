@@ -10,7 +10,9 @@ struct Student{
     dept : String,
     passoutyear : i32
 }
-//manual Diplay::fmt for Student struct
+//manual Diplay::fmt for Student strct
+#[derive(Debug)]
+struct Units; //supposedly a UNIT struct
 
 impl fmt::Display for Student{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result{ //boiler plate code for fmt::Display
@@ -39,4 +41,7 @@ fn main() {
     //Note : I did not use the struct by the name of navin cus , navin was suposedly "moved"
     //in line 32 , and destructuring a moved struct is a big nono in rust
     //println!("{:?}",new_person); gives an error cus "new_person" was moved in line 37
+    let _unit = Units;
+    println!("{:?}",_unit);//I really cant figure out a palce where this will be useful
+
 }
