@@ -37,5 +37,5 @@ fn main() {
     //I see some abstraction in Rust in the above line , without {:p} , rust
     //automatically derefrenced the pointer hence :p must for pointer
     println!("OK now observer carefully");
-    println!("Address of adress var [STACK]: {:p} \n Address of Box type [STACK , deviation from usual]: {:p} \n Address of point type stored in box [Also in heap] : {:p}",&adress,adress,box_point);
+    println!("Address of adress var [STACK]: {:p} \n Address of Box type [HEAP , deviation from usual]: {:p} \n Address of point type stored in box [Also in heap] : {:p}",&adress,adress,box_point);
 }
