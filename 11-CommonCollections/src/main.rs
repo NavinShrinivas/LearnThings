@@ -38,4 +38,44 @@ fn main() {
     //automatically derefrenced the pointer hence :p must for pointer
     println!("OK now observer carefully");
     println!("Address of adress var [STACK]: {:p} \n Address of Box type [HEAP , deviation from usual]: {:p} \n Address of point type stored in box [Also in heap] : {:p}",&adress,adress,box_point);
+    //observing some weird behaviour , i.e adress and &adress giving same value
+    
+
+    //collected itertaors!?!??!
+    //let new_vec : Vec<i32> = (1..10); wont work , below will
+    let new_vec : Vec<i32> = (1..10).collect(); //1-9
+    println!("Vector : {:?}",new_vec);
+
+    //Vectors are iterable in rust , just like pythob , but along with itertaor
+    //we can also enumurate simple intergers in the same loop!
+    for (i,x) in new_vec.iter().enumerate(){
+        println!("In pos {} ,  we have : {}",i,x);
+    }//repetition
+
+//String ans &str
+/*
+ *    There are two types of strings in Rust: String and &str.
+ *
+ *    A String is stored as a vector of bytes (Vec<u8>), 
+ *    but guaranteed to always be a valid UTF-8 sequence.
+ *    String is heap allocated, growable and not null terminated.
+ *
+ *    &str is a slice (&[u8]) that always points to a valid UTF-8 sequence,
+ *    and can be used to view into a String, just like &[T] is a view into Vec<T>.
+ */
+    let new_str1 : &'static str = "hello world";
+    println!("String 1 : {}" , new_str1);
+
+    for i in new_str1.split_whitespace().rev(){
+        print!("{} ",i);      
+    }
+    println!();
+    //rust can do surprinsly freaky stuff with string like : 
+    //lets create a new string:
+    let new_str2 : String = String::from("This is a string string hello hello");
+    let mut string_vec : Vec<&str> = new_str2.split_whitespace().collect();//vector of all words in the vector
+    string_vec.dedup();
+    println!("{:?}",string_vec);
+    
+
 }
