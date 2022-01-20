@@ -28,4 +28,10 @@ fn main() {
     fn_test(a);//a looses scope
     //println!("{}",a); //causes error
 
-}//scope of a is cleard by calling free 
+}//scope of b is cleard by calling free 
+
+
+//If we want the function to use the value and still have it in scope, we need to return
+//it back from the function.This can be done and Rust even let's return multiple variables using
+//tuples, but this yet too tedious that should be a simple programming concept
+//in the next module we will see how we simplyfy this process using refrences and borrowing
