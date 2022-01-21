@@ -35,9 +35,10 @@ Race conditions are IMPOSSIBLE in my opinion, you have no clue how blown my head
 to sound smort : 
 The ability of the compiler to tell that a reference is no longer being used at a point before the end of the scope is called Non-Lexical Lifetimes (NLL for short)
 
+In the next module we will look at different type of references.
 
 ## Dangling pointers
 
 Lifetime specifers FINALLLLY MAKE PROPER SENSE!!!!See the dropper function in main.rs.
 
-We will learn how to solve these a little later, I promis.
+We will learn how to solve these a little later, I promise.
