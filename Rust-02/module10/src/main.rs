@@ -114,6 +114,6 @@ fn main() {
     if let about_person::person(name,age)= person1{
         println!("{} age is {}",name,age);
     }else{
-        println!("Undefined Error!");
+        println!("Undefined Error!Stop trying to break me :(");
     }
 }

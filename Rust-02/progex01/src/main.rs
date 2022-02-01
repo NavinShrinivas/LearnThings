@@ -1,6 +1,6 @@
+use rand::Rng;
 use std::io::{self, prelude::*};
 use std::process::exit;
-use rand::Rng;
 
 fn nfibb(n: i32) -> i32 {
     let mut f = 1;
@@ -17,17 +17,17 @@ fn nfibb(n: i32) -> i32 {
     }
 }
 
-fn randnum()->i32{
+fn randnum() -> i32 {
     let mut rng = rand::thread_rng();
     rng.gen_range(0..100)
 }
 
-fn cel_2_faren(a:f64)->f64{
-    (a*(9.0/5.0))+32.0
+fn cel_2_faren(a: f64) -> f64 {
+    (a * (9.0 / 5.0)) + 32.0
 }
 
-fn faren_2_cel(a:f64)->f64{
-    (a-32.0)*(5.0/9.0)
+fn faren_2_cel(a: f64) -> f64 {
+    (a - 32.0) * (5.0 / 9.0)
 }
 
 fn main() {
@@ -58,32 +58,39 @@ fn main() {
             1 => {
                 let mut input = String::new();
                 print!("Enter temprature in farenheit : ");
-                io::stdout().flush().expect("Something went wrong in printing.");
-                io::stdin().read_line(&mut input).expect("Something went wrong readin input");
-                let faren : f64 = match input.trim().parse(){
+                io::stdout()
+                    .flush()
+                    .expect("Something went wrong in printing.");
+                io::stdin()
+                    .read_line(&mut input)
+                    .expect("Something went wrong readin input");
+                let faren: f64 = match input.trim().parse() {
                     Ok(num) => num,
-                    Err(_) => { 
+                    Err(_) => {
                         println!("Stop tyring to break me :)");
                         continue;
-                    },                
+                    }
                 };
-                println!("Given temprature in cel : {}",faren_2_cel(faren));
-
+                println!("Given temprature in cel : {}", faren_2_cel(faren));
             }
             2 => {
                 let mut input = String::new();
                 print!("Enter temprature in celcius : ");
-                io::stdout().flush().expect("Something went wrong in printing.");
-                io::stdin().read_line(&mut input).expect("Something went wrong readin input");
-                let cel : f64 = match input.trim().parse(){
+                io::stdout()
+                    .flush()
+                    .expect("Something went wrong in printing.");
+                io::stdin()
+                    .read_line(&mut input)
+                    .expect("Something went wrong readin input");
+                let cel: f64 = match input.trim().parse() {
                     Ok(num) => num,
-                    Err(_) => { 
+                    Err(_) => {
                         println!("Stop tyring to break me :)");
                         continue;
-                    },                
+                    }
                 };
-                println!("Given temprature in farenheit : {}",cel_2_faren(cel));
-            },
+                println!("Given temprature in farenheit : {}", cel_2_faren(cel));
+            }
             3 => {
                 let mut input: String = String::new();
                 print!("Enter a number to compute it from fibbonacci series : ");
@@ -101,15 +108,15 @@ fn main() {
                     }
                 };
                 println!("The {}(th/nd/rd) fibbonacci element is : {}", n, nfibb(n));
-            },
+            }
             4 => {
                 let ans = loop {
-                    let r =  randnum();
-                    if r%3 == 0 && r%2 == 0{
+                    let r = randnum();
+                    if r % 3 == 0 && r % 2 == 0 {
                         break r;
                     }
                 };
-                println!("Random divisible by 6 number : {}",ans);
+                println!("Random divisible by 6 number : {}", ans);
             }
             5 => exit(0),
             _ => println!("Something went wrong on our side."),
