@@ -1,5 +1,7 @@
 use std::fmt::format;
 
+
+#[derive(Debug)]
 enum Heterogenous {
     Text(String),
     Number(i32),
@@ -52,4 +54,14 @@ fn main() {
     println!("sec_str : {} |||| pstr : {}", sec_str, pstr); //valid
     let str3 = format!("{}-+=[{}]+{}", pstr, pstr, pstr); //only immutable references
     println!("{} {}", str3, pstr); //allowed
+    let weird_str : String = String::from("Здравствуйте");
+    //let letter = &weird_str[0]; //expecting it to be that reverse 3? Nope its 208
+    for item in weird_str.as_bytes(){
+        println!("bytes of string : {}",item);
+    }
+    /*
+     *for i in typ.iter(){
+     *    println!("{:?}",i);
+     *}
+     */
 }
