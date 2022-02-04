@@ -65,3 +65,7 @@ What would happen if we used &hello[0..1]? The answer: Rust would panic at runti
             note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace```
 
 You should use ranges to create string slices with caution, because doing so can crash your program.
+
+## Finally iteratintg string 
+
+So how does one iterate over string in Rust? One uses the .chars() method in strings

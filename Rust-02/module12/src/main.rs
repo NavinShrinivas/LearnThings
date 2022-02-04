@@ -1,5 +1,5 @@
-use std::fmt::format;
-
+use std::io::stdout;
+use std::io::Write;
 
 #[derive(Debug)]
 enum Heterogenous {
@@ -64,4 +64,10 @@ fn main() {
      *    println!("{:?}",i);
      *}
      */
+    print!("The string using for loops : ");
+    stdout().flush().expect("Somrthing went wrong!");
+    for i in weird_str.chars(){
+        print!("{}",i);
+        stdout().flush().expect("Something went wrong");
+    }
 }
