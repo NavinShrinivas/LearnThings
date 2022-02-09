@@ -28,7 +28,25 @@ fn main() {
     //the above tow are not aallowed when the mutable ref is not withing a block
 
     /*
-     *mutref.drop() //illieagal imo
-     */
+         *mutref.drop() //illieagal imo
+         */
     println!("{:?}",map3.get(&String::from("UwU")));
+    let _int : i32 = 34;
+    //println!("{:?}",map3.get(&_int)) //will give error
+    for (key,value) in map3.iter(){
+        println!("{} : {}",key,value);
+    }
+
+    let key = String::from("hello world");
+    map3.entry(&key).or_insert(3456);
+    /*
+     *let mref = map3.entry(&String::from("hello world")).or_insert(0);
+     **mref += 9;
+     */
+    //the above doesnt work as the string that is put in enrty is instantly dropped making mref
+    //refer to something that doesnt exist 
+    let mref = map3.entry(&key).or_insert(0);
+    *mref += 9;
+    println!("{:?}",map3.get(&key))
 }
+
