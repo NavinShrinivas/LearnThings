@@ -72,6 +72,11 @@ We have learnt hash maps in depth in our dsa course and we used to use dumb mod 
 
 Rust is very unlike other languages in this palce, it 3 diff kind of errors , recoverable and Non recoverable. To handle these Rust has Result<T, E> and !panic respectively. In this module ill deal with !panic : Non recoverable errors.
 
-## Recoverable  Errors : !panic 
+## Recoverable Errors : !panic 
 
-Rust programs usually "unwind", i.e they go through the entire stack and clear memory of each function they come across, this is good but its slop, languages like C simply abrupt, this change can be made 
+Rust programs usually "unwind", i.e they go through the entire stack and clear memory of each function they come across, this is good but its slop, languages like C simply abrupt, this change can be made in the cargo.toml file, you simply have to add : 
+```
+[profile.release]
+panic = 'abort'
+```
+we can panic by using the panic! macro, anyway, that's not important part of this module! When a function panics, the runtime gives us a output of where the panic happened, often we use other external crates and function, thus an "line no."number output from the runtime is quite useless, for times like these BACKTRACE exist, `RUST_BACKTRACE=1 cargo run` will give a list of output, the lines before files written by you are functions called by your functions, one below are the ones that called your function.
