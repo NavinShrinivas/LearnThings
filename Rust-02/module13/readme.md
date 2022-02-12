@@ -72,7 +72,7 @@ We have learnt hash maps in depth in our dsa course and we used to use dumb mod 
 
 Rust is very unlike other languages in this palce, it 3 diff kind of errors , recoverable and Non recoverable. To handle these Rust has Result<T, E> and !panic respectively. In this module ill deal with !panic : Non recoverable errors.
 
-## Recoverable Errors : !panic 
+## Un-Recoverable Errors : !panic 
 
 Rust programs usually "unwind", i.e they go through the entire stack and clear memory of each function they come across, this is good but its slop, languages like C simply abrupt, this change can be made in the cargo.toml file, you simply have to add : 
 ```

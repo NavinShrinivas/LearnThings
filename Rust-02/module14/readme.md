@@ -37,6 +37,12 @@ fn main() {
 ```
 Neat no? For now let's look into unwrap and except 
 
-### Unwrap and Except 
+### Unwrap and Expect 
 
-Unwrap will return the value if it's of type Ok, else it calls panic. Except is also similar to Unwrap, but we can specify what message it will be raising the panic using
+Unwrap will return the value if it's of type Ok, else it calls panic. Expect is also similar to Unwrap, but we can specify what message it will be raising the panic using.
+
+### Propagating errors 
+
+Let's string a string to integer parsing function that has to propagate errors when the user inputs random crap
+
+There is much simpler way using "?" operator.
