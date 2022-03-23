@@ -16,7 +16,7 @@ a mut is different from overshadowing, in overshadowing one can change the the t
 well. And ofc we can do as many operations we want on the variable and still keep the variable
 immutable.
 
-Alsooo, constants can be overshadowed.
+Alsooo, constants cant be overshadowed. Constants and static must have a fixed type def.
 
 ## Integer overflows in rust
 
