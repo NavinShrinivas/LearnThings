@@ -4,6 +4,7 @@ fn main() {
     //
     println!("Hello, world!");
     let mut st : String = String::from("Hello, world!");
+    let str_new : String = String::new();
 
     let i1 : i32 = 23;
     let i2 : i32 = i1; //Deep copy of stack allocated vriables autmatically.
@@ -48,8 +49,10 @@ fn main() {
     //println!("{}",r3); //Breaks code
     //This mess of a scope system is handler by NLL : non lexical lifetimes
 
-    //danglings pointers are impossible in rust, the following example will show dis : 
-    let want_ref = get_ref();
+    /*
+    danglings pointers are impossible in rust, the following example will show dis : 
+    let want_ref = get_ref(); //Will give errors
+    */
     
 
 
