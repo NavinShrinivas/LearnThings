@@ -69,4 +69,66 @@ The choice if String instead for &str was  a deliberate choice above, this is cu
 > NOTE : Every field of the struct must have the same set of derived traits.
 - Struct has have methods closely tied to themselves in Rust, These are called implmentations.
 
-## Enums and Options : The alternative to the billion dollar mistake.
+## Enums and Options : The alternative to the billion dollar mistake. How Enums tie it all together.
+- Basic enum definition syntax : 
+```rs
+#[derive(Debug)]
+struct Day{
+    day_in_words: String,
+    date: i32,
+    month: i32,
+    year: i32
+}
+#[derive(Debug)]
+enum DayType{
+    Weekday(Day),
+    Weekend(Day)
+}
+
+impl DayType{
+    fn print_pretty(self: &Self){
+        println!("{:#?}",self);
+    }
+}
+```
+- Options :
+```rs
+let x: Option<i32> = Some(31);
+let _y = x+34; //Gives error, cant add Option and i32
+```
+That is hwo rust makes sure that a null reference can never happen, Option is more like indicating that a variable can be of typer None, meaning before you can do any operation on it some check have to be done. If the variable is not of type option is can never be None. 
+> Note : None is analougous to NULL is other subject, but ofc better.
+- This is where we get `match` to help us, NOTE : match has to be exhaustive at all times or have _ arm. Using match with Options : 
+```rs
+x = match x{
+    None => { 
+        println!("Not initiliased");
+        None
+    },
+    Some(x)=>{
+        Some(x+31)
+    }
+}
+```
+- Using match with above enums : 
+```rs
+impl DayType{
+    fn print_pretty(self: &Self){
+        println!("{:#?}",self);
+    }
+    fn is_tueday(self : &Self){
+        match self{
+            DayType::Weekday(day)=>{
+                if day.day_in_words == "tuesday"
+                {
+                    println!("It is tueday!");
+                }else{
+                    println!("It is not tuesday :(");
+                }
+            },
+            _=>println!("It is not tuesday :(")
+        } 
+    }
+}
+```
+> NOTE : the Enums-03 module is very very well written! refer it.
