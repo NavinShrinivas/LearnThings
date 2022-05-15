@@ -132,3 +132,10 @@ impl DayType{
 }
 ```
 > NOTE : the Enums-03 module is very very well written! refer it.
+
+## Modules  
+
+- Rust only sees the "crate root", that is the main.rs files in binary crate and lib.rs in library crate. Any file that is neeeded to be used must be explicitly added in the module tree. This can be done using the mod keyword, but as said before rust only sees main.rs, hence we use the mod keyword in main.rs file.
+- Everything is private in rust, we can make it public.
+- If ther exists modules in a folder, the folder must have a mod.rs which define all the modules in the folder and also pub or not.
+- Once added in the Module tree, the given module can be accessed from other files using the correct path.
