@@ -1,0 +1,28 @@
+//Thhis module is all abotu inbuil collections and their important methods
+//This Module can be better learnt from readm.md which I have tried to cover everything
+//Kinda like the ultimate cheat sheet.
+use std::io::{Write,Read,prelude};
+
+fn main() {
+    println!("Hello, world!");
+    //----------Vectors----------
+    let mut v1 : Vec<i32> = Vec::new();
+    let mut v2 = vec![2,4,7];
+    v1.push(3);
+    v2.push(3);
+    v2.pop();
+    println!("First element : {}",v1[0]); 
+    println!("First element : {}",v1.get(0).unwrap()); //Safer way of fetching element.
+    let mut input : String = String::new();
+    std::io::stdout().write(b"Enter an index to fetch from vector 1 : ").unwrap();
+    std::io::stdout().flush().unwrap(());
+    std::io::stdin().read_line(&mut input).unwrap();
+    let input_i32 : usize = match input.trim().parse(){
+        Ok(n) => n,
+        _=>panic!("Invalid input for index")
+    };
+    match v1.get(input_i32){
+        Some(n) => println!("Element found : {}",n),
+        None => println!("Element not found at that index")
+    };
+}

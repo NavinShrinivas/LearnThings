@@ -5,7 +5,7 @@ There are some of the resources I found VERRRYYYYY useful when learning rust the
 - [Module Systems](https://www.sheshbabu.com/posts/rust-module-system/)
 
 
-# My Rust cheat sheet : 
+# Ultimate Rust cheat sheet : 
 
 ## Vectors and slices
 
@@ -139,3 +139,99 @@ impl DayType{
 - Everything is private in rust, we can make it public.
 - If ther exists modules in a folder, the folder must have a mod.rs which define all the modules in the folder and also pub or not.
 - Once added in the Module tree, the given module can be accessed from other files using the correct path.
+
+## Vectors : Allocated in the heap
+- vectors are indexable, but instead of using [] and letting the code panic when the element does not exists, we can use .get method that return an Option type (Some() or None). Code : 
+```rs
+//----------Vectors----------
+let mut v1 : Vec<i32> = Vec::new();
+let mut v2 = vec![2,4,7];
+v1.push(3);
+v2.push(3);
+v2.pop();
+println!("First element : {}",v1[0]); 
+println!("First element : {}",v1.get(0).unwrap()); //Safer way of fetching element.
+```
+This can lead to cleaner code as such : 
+```rs
+let mut input : String = String::new();
+std::io::stdout().write(b"Enter an index to fetch from vector 1 : ").unwrap();
+std::io::stdout().flush().unwrap();
+std::io::stdin().read_line(&mut input).unwrap();
+let input_i32 : usize = match input.trim().parse(){
+    Ok(n) => n,
+    _=>panic!("Invalid input for index")
+};
+match v1.get(input_i32){
+    Some(n) => println!("Element found : {}",n),
+    None => println!("Element not found at that index")
+};
+```
+Incredible piece of code, no?
+
+- You can not have a push operation where there is a refrence (mut or imut) before hand. To make this easier to remember just assume that .push() method takes a mutable reference of vectors to write to it. Simply Rust will not let you modify anything as long as a refernce exists.
+```rs
+//Works : 
+let v1_ref = &v1[0];
+v1.push(2);
+
+//Wont work : 
+let v1_ref2 = &v1[1];
+v1.push(4);
+//println!("Printing a refrence that appeared before push : {}",v1_ref2); //Will break code
+```
+- We can iterate over vectors with mut or imut refrences, like so : 
+```rs
+for i in &v1{
+    println!("Item from v1 : {}",i);
+}
+for i in &mut v1{
+    *i=*i+50;
+}
+for i in &v1{
+    println!("Item from v1 : {}",i);
+}
+```
+- Vectors are sadly homogeneous in Rust (This also is a degin choice to security), but we can still do something like this : 
+```rs
+#[derive(Debug)]
+enum UniversalType{
+    Text(String),
+    Number(i32),
+    Charecter(char),
+    Decimal(f64)
+}
+
+...
+
+let v3 = vec![UniversalType::Text(String::from("hello")),UniversalType::Number(34)];
+println!("from v3 : {:?}",v3.get(1).unwrap());
+```
+
+## String
+- Can convert from &str to String using .to_string(), ownership is no transffered. Contat using + does transffer ownership depending on refrence of not. Code like so : 
+```rs
+//----------String-----------
+let str1 : &str = "Hello, World!";
+let mut string1 : String = str1.to_string();
+string1.push_str(&str1); //Take refrence of str1 thus ownership of str1 is maintained.
+println!("{}",str1);
+let string2 : String = String::from("Hello world, twice!");
+let string3 = string2 + &string1; //ownership of string2 is transffered. string1 remains the same.
+println!("{}",string3);
+```
+that thing with + sign is confusing, no? Well in the stad def the code is such that u can add a String with &str, but &string1 is a &String, how does it work then? Rust does something called defer coerce, it converts the &String to &str.
+> Notes : You can not add two String (String + String) in rust.
+Its this property that makes the usage of + for concat of String very weird, hence the format! macro.
+- format macro:
+```rs
+let temp_str1 = String::from("5");
+let temo_str2 = String::from("7");
+let string4 : String = format!("{}\"{}\' tall",&temp_str1,&temo_str2);
+println!("Your height : {}",string4);
+```
+- Idexing string using [] is not allowed. Simply put its because Rust doesn’t want us fools accessing a single byte when in some cases utf-8 characters are encoded with 2 bytes. Rust book explains is much better [here](https://doc.rust-lang.org/book/ch08-02-strings.html#indexing-into-strings).
+- If you still want to index them, you can make references index or slices, both of which will return raw bytes and have no assurity.
+
+
+## HashMaps 
