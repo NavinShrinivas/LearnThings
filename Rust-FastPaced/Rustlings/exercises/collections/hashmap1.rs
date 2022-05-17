@@ -11,15 +11,18 @@
 // Execute the command `rustlings hint hashmap1` if you need
 // hints.
 
-// I AM NOT DONE
+// I AM DONE
 
 use std::collections::HashMap;
 
 fn fruit_basket() -> HashMap<String, u32> {
-    let mut basket = // TODO: declare your hash map here.
+    let mut basket : HashMap<String,u32> = HashMap::new();
 
     // Two bananas are already given for you :)
     basket.insert(String::from("banana"), 2);
+    //I dont have apples in my mind, but I certainly have kirby 
+    basket.insert(String::from("Kirby"),2);
+    basket.insert(String::from("Pikachu"),1);
 
     // TODO: Put more fruits in your basket here.
 
