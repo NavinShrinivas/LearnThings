@@ -1,3 +1,1 @@
-pub fn database_main(){
-
-}
+pub fn database_main() {}

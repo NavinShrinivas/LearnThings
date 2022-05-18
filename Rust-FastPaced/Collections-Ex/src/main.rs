@@ -1,45 +1,51 @@
 //Inserting to module tree
+mod Database;
 mod ModeMedian;
 mod PigLatin;
-mod Database;
+//------------------------
 
+//public modules
+pub mod helper_functions {
+    use std::io::*;
+    pub fn flush_print(s: &str) {
+        std::io::stdout().write(s.as_bytes()).unwrap();
+        std::io::stdout().flush().unwrap();
+    }
 
-
-//Imports
-use std::collections::HashMap;
-use std::io::*;
-
+    pub fn read_line_self() -> String {
+        let mut input: String = String::new();
+        std::io::stdin().read_line(&mut input).unwrap();
+        input
+    }
+}
 
 fn main() {
     let mut status = true;
-    while status{
-        println!("Crate implmenting the three exercises mentioned in the book.");
+    println!("Crate implmenting the three exercises mentioned in the book.");
+    while status {
         println!("Select 1 form the below : ");
         println!("1.Find mode and median");
-        println!("2.Convert to pig lating (first -> irst-fay, apple -> apple-hay)");
+        println!("2.Convert to pig latin");
         println!("3.department records");
-        std::io::stdout().write(b"Enter your option : ").unwrap();
-        std::io::stdout().flush().unwrap();
-        let mut option_input : String = String::new();
-        std::io::stdin().read_line(&mut option_input).unwrap();
+        helper_functions::flush_print("Enter your option :");
+        let option_input: String = helper_functions::read_line_self();
 
-        match option_input.trim().parse::<i32>(){
-            Ok(n)=>{
-                match n{
+        match option_input.trim().parse::<i32>() {
+            Ok(n) => {
+                match n {
                     1 => ModeMedian::mode_median_main::mode_median_main(),
                     2 => PigLatin::pig_latin_main::pig_latin_main(),
                     3 => Database::database_main::database_main(),
-                    _ =>{ 
+                    _ => {
                         println!("\n\tWrong entry!! \n");
                         continue;
-                    }                
+                    }
                 }
                 status = false;
-            },
-            _ =>{
+            }
+            _ => {
                 println!("\n\tWrong entry!! \n");
             }
         };
-
     }
 }
