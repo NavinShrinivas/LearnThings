@@ -27,6 +27,7 @@ fn main() {
         println!("1.Find mode and median");
         println!("2.Convert to pig latin");
         println!("3.department records");
+        println!("4.Exit");
         helper_functions::flush_print("Enter your option :");
         let option_input: String = helper_functions::read_line_self();
 
@@ -36,6 +37,7 @@ fn main() {
                     1 => ModeMedian::mode_median_main::mode_median_main(),
                     2 => PigLatin::pig_latin_main::pig_latin_main(),
                     3 => Database::database_main::database_main(),
+                    4 => break,
                     _ => {
                         println!("\n\tWrong entry!! \n");
                         continue;

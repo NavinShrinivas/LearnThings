@@ -1,0 +1,12 @@
+mod crate::helper_functions.
+
+
+
+pub fn database_main() {
+
+    loop{
+        ("Enter command (? for help) : ");
+
+    }
+
+}
