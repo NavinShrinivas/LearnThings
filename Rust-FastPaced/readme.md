@@ -7,17 +7,6 @@ There are some of the resources I found VERRRYYYYY useful when learning rust the
 
 # Ultimate Rust cheat sheet : 
 
-## Vectors and slices
-
-- let mut vec = Vec::new();
-- vec.push(1) //Only a single value
-- let mut vec2 = vec!['H','E','L','L','O'];
-- vec.len()
-- vec[2] //indexble
-- vec.get(2) //same as indexing
-- let vec_slice = &vec[2..5]; //Slices are ALWAYS refrences, the last index is not included
-
-
 ## Tuples  
 
 - let new_tup = ("name_str", 32);
@@ -141,6 +130,15 @@ impl DayType{
 - Once added in the Module tree, the given module can be accessed from other files using the correct path.
 
 ## Vectors : Allocated in the heap
+
+- let mut vec = Vec::new();
+- vec.push(1) //Only a single value
+- let mut vec2 = vec!['H','E','L','L','O'];
+- vec.len()
+- vec[2] //indexble
+- vec.get(2) //same as indexing
+- let vec_slice = &vec[2..5]; //Slices are ALWAYS refrences, the last index is not included
+
 - vectors are indexable, but instead of using [] and letting the code panic when the element does not exists, we can use .get method that return an Option type (Some() or None). Code : 
 ```rs
 //----------Vectors----------
@@ -280,4 +278,109 @@ for i in text.split_whitespace(){
     *count+=1;
 }
 println!("{:#?}",hash3);
+``` 
+
+## Generics : Function overloading alternatives. kind of 
+
+- HGnerics help with function overloading but also restricting methods bassaedon types and traits.
+
+- Generics on functions (We'll get back to this later) : You can not compare any type T unless the type ad the std::cmp::PartialOrd trait is implmented, meaning to compare generic we need that trait.
+- Genrics on struct : 
+    - For a given struct or fn the T should be the same type everywhere, internally the compiler converts T to its conrete type multiple types if needed, th can be see clealy wwth the given example belo. This means if you possibly wat two different types of generices u need two generics:
+```rs
+struct Pairs<T>{
+    x: T,
+    y: T,
+}
+
+struct PairsHetro<T,U>{
+    x:T,
+    y:U,
+}
+
+fn main() {
+    println!("Hello, world!");
+let p1 = Pairs{ x:12,y:23 }; //Works : Implicit definition of T is done by compiler as i32 for p1
+    //let p2 : Pairs<T> = { x:23,y:34  }; //Wont work cus main function doesnt know what <T> is
+    let p2 : Pairs<i32> = Pairs{ x:23,y:34 }; //Works explicit definition of T
+    let p3 = Pairs{ x:2.3,y:23 }; //Wont work;
+    let p3 = PairsHetro{x:2.3,y:23}; //Works!
+
+}
+```
+> Notes : Rust accomplishes this by performing monomorphization of the code using generics at compile time. Monomorphization is the process of turning generic code into specific code by filling in the concrete types that are used when compiled. This way we have 0...absolute 0 speed diff in runtime.
+- Generics on enums :
+    - Here we can see exaclty how Option enum was defined in std : 
+    ```rs
+    enum Option<T>{
+        Some(T),
+        None
+    }
+    ```
+    - And also Result enum from std :
+    ```rs
+    enum Result<T,E>{
+        Ok(T),
+        Err(E)
+    }
+    ```
+- Generics on imple, we can ue generic types in impl in very nice ways. You can restrict some method to when geneeic of some particula type. You can also make some methods available to eveything no matter the the generuc turned out be, like so:
+```rs
+struct PairsHetro<T,U>{
+    x:T,
+    y:U,
+}
+
+use std::fmt::Debug;
+impl<T:Debug,U:Debug> PairsHetro<T,U>{ //These methods are available to all T and U that have Debug trait
+    fn pretty_print(self:&Self){
+    println!(" ({:#?},{:#?}) ",self.x,self.y);
+    }
+}
+
+impl PairsHetro<i32,f32>{
+    fn add2(self:&mut Self){
+        self.x+=2;
+        self.y+=2.0;
+    }
+} 
+
+//In all trait check happen on generics going into imp and type checks happen on generics going into
+//the object (struct or enu or whatev)
+
+fn main() {
+
+    let p3 = PairsHetro{x:2.3,y:23}; //Works!
+    let mut p4 = PairsHetro{x:32,y:3.2};
+    //p3.add2(); //Does not work
+    p4.add2(); //works
+    p3.pretty_print(); //Work 
+    p4.pretty_print(); //Works
+}
+```
+> Notes : trait check go into impl generics, type checks go into object generics (strucor enum), see in above example.
+- Its not compulsory that them impl methods have to use the same genrics as their objects, they can introduce new generics thenselves, the examples for the book makes this clear, like sso : 
+```rs
+struct Point<X1, Y1> {
+    x: X1,
+    y: Y1,
+}
+
+impl<X1, Y1> Point<X1, Y1> {
+    fn mixup<X2, Y2>(self, other: Point<X2, Y2>) -> Point<X1, Y2> {
+        Point {
+            x: self.x,
+            y: other.y,
+        }
+    }
+}
+
+fn main() {
+    let p1 = Point { x: 5, y: 10.4 };
+    let p2 = Point { x: "Hello", y: 'c' };
+
+    let p3 = p1.mixup(p2);
+
+    println!("p3.x = {}, p3.y = {}", p3.x, p3.y);
+}
 ```
