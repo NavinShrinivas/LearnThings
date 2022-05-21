@@ -1,0 +1,486 @@
+<h2>RESOURCES :</h2>
+<p>There are some of the resources I found VERRRYYYYY useful when learning rust the incredible language!</p>
+<ul>
+<li><a href="https://www.sheshbabu.com/posts/rust-module-system/">Module Systems</a></li>
+</ul>
+<h1>Ultimate Rust cheat sheet :</h1>
+<h2>Tuples</h2>
+<ul>
+<li>let new_tup = (&quot;name_str&quot;, 32);</li>
+<li>let (name,age) =  new_tup //destructuring</li>
+<li>new_tup.1 //Dot notation for indexing, indexing start from 0</li>
+<li>Only has debug print trait implemented</li>
+</ul>
+<h2>Structs</h2>
+<ul>
+<li>Basic syntax for defining a struct :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Message{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">from</span><span style="color:#c0c5ce;">: String,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">to</span><span style="color:#c0c5ce;">: String,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">content</span><span style="color:#c0c5ce;">: Vec&lt;</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">&gt;, </span><span style="color:#65737e;">//Vector for bytes
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">typ</span><span style="color:#c0c5ce;">: MessageType
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<ul>
+<li>A struct can be built and is reffered to as creating and &quot;instance&quot;, NOTE : To construct a struct you must provide all fields.</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> msg1 = Message{
+</span><span style="color:#c0c5ce;">        from: String::from(&quot;</span><span style="color:#a3be8c;">Navin</span><span style="color:#c0c5ce;">&quot;),
+</span><span style="color:#c0c5ce;">        to: String::from(&quot;</span><span style="color:#a3be8c;">User2</span><span style="color:#c0c5ce;">&quot;),
+</span><span style="color:#c0c5ce;">        content: vec![</span><span style="color:#d08770;">72</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">101</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">108</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">108</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">111</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">44</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">32</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">87</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">111</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">114</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">108</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">100</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">33</span><span style="color:#c0c5ce;">],
+</span><span style="color:#c0c5ce;">        typ: MessageType::Message,
+</span><span style="color:#c0c5ce;">};
+</span>
+</code></pre>
+<ul>
+<li>fields of a stuct are read using dot notation</li>
+<li>Entire instance must be mutable, individual fields can not be mutable by themselves.</li>
+<li>[Struct Update Syntax] Another instance can be created from existing ones, all new field value must be explicitly mentioned before the ..old_struct, like so :
+.</li>
+</ul>
+<pre style="background-color:#2b303b;"><code>
+<span style="color:#c0c5ce;">let _msg3 = Message{
+</span><span style="color:#c0c5ce;">        typ: MessageType::File,
+</span><span style="color:#c0c5ce;">        ..msg1 //NOTE : All values of msg1 that do not have copy trait are moved to msg3
+</span><span style="color:#c0c5ce;">    };
+</span><span style="color:#c0c5ce;">    //println!(&quot;Messag was sent from {:?} to {:?} with content : {:?}&quot;,msg1.from,msg1.to,std::str::from_utf8(&amp;msg1.content).unwrap());//Causes error
+</span>
+</code></pre>
+<p>Be very vary of the move happening in the &quot;Struct Update Syntax&quot;, as the name suggests, this must be used for updating a struct not creating new ones.</p>
+<ul>
+<li>Rust also has tuples struct, where the field names are not given:</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Color (</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">);
+</span><span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Coord_3d (</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">); </span><span style="color:#65737e;">//Can destructure and index using . notation
+</span>
+</code></pre>
+<p>The choice if String instead for &amp;str was  a deliberate choice above, this is cus Rust expects a struct to own all it's values. If a struct should store a reference then we need lifetime specifiers which we will see later.</p>
+<ul>
+<li>Structs by themselves do not have debug print trait, and hence needs to be derived using #[devive(Debug)]</li>
+</ul>
+<blockquote>
+<p>NOTE : Every field of the struct must have the same set of derived traits.</p>
+</blockquote>
+<ul>
+<li>Struct has have methods closely tied to themselves in Rust, These are called implmentations.</li>
+</ul>
+<h2>Enums and Options : The alternative to the billion dollar mistake. How Enums tie it all together.</h2>
+<ul>
+<li>Basic enum definition syntax :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug)]
+</span><span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Day{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">day_in_words</span><span style="color:#c0c5ce;">: String,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">date</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">month</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">year</span><span style="color:#c0c5ce;">: </span><span style="color:#b48ead;">i32
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug)]
+</span><span style="color:#b48ead;">enum </span><span style="color:#c0c5ce;">DayType{
+</span><span style="color:#c0c5ce;">    Weekday(Day),
+</span><span style="color:#c0c5ce;">    Weekend(Day)
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">impl </span><span style="color:#c0c5ce;">DayType{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">print_pretty</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">: &amp;</span><span style="color:#b48ead;">Self</span><span style="color:#c0c5ce;">){
+</span><span style="color:#c0c5ce;">        println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<ul>
+<li>Options :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> x: Option&lt;</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">&gt; = Some(</span><span style="color:#d08770;">31</span><span style="color:#c0c5ce;">);
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> _y = x+</span><span style="color:#d08770;">34</span><span style="color:#c0c5ce;">; </span><span style="color:#65737e;">//Gives error, cant add Option and i32
+</span>
+</code></pre>
+<p>That is hwo rust makes sure that a null reference can never happen, Option is more like indicating that a variable can be of typer None, meaning before you can do any operation on it some check have to be done. If the variable is not of type option is can never be None.</p>
+<blockquote>
+<p>Note : None is analougous to NULL is other subject, but ofc better.</p>
+</blockquote>
+<ul>
+<li>This is where we get <code>match</code> to help us, NOTE : match has to be exhaustive at all times or have _ arm. Using match with Options :</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#c0c5ce;">x = </span><span style="color:#b48ead;">match</span><span style="color:#c0c5ce;"> x{
+</span><span style="color:#c0c5ce;">    None =&gt; { 
+</span><span style="color:#c0c5ce;">        println!(&quot;</span><span style="color:#a3be8c;">Not initiliased</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#c0c5ce;">        None
+</span><span style="color:#c0c5ce;">    },
+</span><span style="color:#c0c5ce;">    Some(x)=&gt;{
+</span><span style="color:#c0c5ce;">        Some(x+</span><span style="color:#d08770;">31</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<ul>
+<li>Using match with above enums :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">impl </span><span style="color:#c0c5ce;">DayType{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">print_pretty</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">: &amp;</span><span style="color:#b48ead;">Self</span><span style="color:#c0c5ce;">){
+</span><span style="color:#c0c5ce;">        println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">is_tueday</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;"> : &amp;</span><span style="color:#b48ead;">Self</span><span style="color:#c0c5ce;">){
+</span><span style="color:#c0c5ce;">        </span><span style="color:#b48ead;">match </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">{
+</span><span style="color:#c0c5ce;">            DayType::Weekday(day)=&gt;{
+</span><span style="color:#c0c5ce;">                </span><span style="color:#b48ead;">if</span><span style="color:#c0c5ce;"> day.day_in_words == &quot;</span><span style="color:#a3be8c;">tuesday</span><span style="color:#c0c5ce;">&quot;
+</span><span style="color:#c0c5ce;">                {
+</span><span style="color:#c0c5ce;">                    println!(&quot;</span><span style="color:#a3be8c;">It is tueday!</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#c0c5ce;">                }</span><span style="color:#b48ead;">else</span><span style="color:#c0c5ce;">{
+</span><span style="color:#c0c5ce;">                    println!(&quot;</span><span style="color:#a3be8c;">It is not tuesday :(</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#c0c5ce;">                }
+</span><span style="color:#c0c5ce;">            },
+</span><span style="color:#c0c5ce;">            _=&gt;println!(&quot;</span><span style="color:#a3be8c;">It is not tuesday :(</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">        } 
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<blockquote>
+<p>NOTE : the Enums-03 module is very very well written! refer it.</p>
+</blockquote>
+<h2>Modules</h2>
+<ul>
+<li>Rust only sees the &quot;crate root&quot;, that is the main.rs files in binary crate and lib.rs in library crate. Any file that is neeeded to be used must be explicitly added in the module tree. This can be done using the mod keyword, but as said before rust only sees main.rs, hence we use the mod keyword in main.rs file.</li>
+<li>Everything is private in rust, we can make it public.</li>
+<li>If ther exists modules in a folder, the folder must have a mod.rs which define all the modules in the folder and also pub or not.</li>
+<li>Once added in the Module tree, the given module can be accessed from other files using the correct path.</li>
+</ul>
+<h2>Vectors : Allocated in the heap</h2>
+<ul>
+<li>
+<p>let mut vec = Vec::new();</p>
+</li>
+<li>
+<p>vec.push(1) //Only a single value</p>
+</li>
+<li>
+<p>let mut vec2 = vec!['H','E','L','L','O'];</p>
+</li>
+<li>
+<p>vec.len()</p>
+</li>
+<li>
+<p>vec[2] //indexble</p>
+</li>
+<li>
+<p>vec.get(2) //same as indexing</p>
+</li>
+<li>
+<p>let vec_slice = &amp;vec[2..5]; //Slices are ALWAYS refrences, the last index is not included</p>
+</li>
+<li>
+<p>vectors are indexable, but instead of using [] and letting the code panic when the element does not exists, we can use .get method that return an Option type (Some() or None). Code :</p>
+</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#65737e;">//----------Vectors----------
+</span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> v1 : Vec&lt;</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">&gt; = Vec::new();
+</span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> v2 = vec![</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">,</span><span style="color:#d08770;">7</span><span style="color:#c0c5ce;">];
+</span><span style="color:#c0c5ce;">v1.</span><span style="color:#96b5b4;">push</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">v2.</span><span style="color:#96b5b4;">push</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">3</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">v2.</span><span style="color:#96b5b4;">pop</span><span style="color:#c0c5ce;">();
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#a3be8c;">First element : </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,v1[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">]); 
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#a3be8c;">First element : </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,v1.</span><span style="color:#96b5b4;">get</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">()); </span><span style="color:#65737e;">//Safer way of fetching element.
+</span>
+</code></pre>
+<p>This can lead to cleaner code as such :</p>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> input : String = String::new();
+</span><span style="color:#c0c5ce;">std::io::stdout().</span><span style="color:#96b5b4;">write</span><span style="color:#c0c5ce;">(</span><span style="color:#b48ead;">b</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">Enter an index to fetch from vector 1 : </span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+</span><span style="color:#c0c5ce;">std::io::stdout().</span><span style="color:#96b5b4;">flush</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+</span><span style="color:#c0c5ce;">std::io::stdin().</span><span style="color:#96b5b4;">read_line</span><span style="color:#c0c5ce;">(&amp;</span><span style="color:#b48ead;">mut</span><span style="color:#c0c5ce;"> input).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">();
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> input_i32 : </span><span style="color:#b48ead;">usize </span><span style="color:#c0c5ce;">= </span><span style="color:#b48ead;">match</span><span style="color:#c0c5ce;"> input.</span><span style="color:#96b5b4;">trim</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">parse</span><span style="color:#c0c5ce;">(){
+</span><span style="color:#c0c5ce;">    Ok(n) =&gt; n,
+</span><span style="color:#c0c5ce;">    _=&gt;panic!(&quot;</span><span style="color:#a3be8c;">Invalid input for index</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">};
+</span><span style="color:#b48ead;">match</span><span style="color:#c0c5ce;"> v1.</span><span style="color:#96b5b4;">get</span><span style="color:#c0c5ce;">(input_i32){
+</span><span style="color:#c0c5ce;">    Some(n) =&gt; println!(&quot;</span><span style="color:#a3be8c;">Element found : </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,n),
+</span><span style="color:#c0c5ce;">    None =&gt; println!(&quot;</span><span style="color:#a3be8c;">Element not found at that index</span><span style="color:#c0c5ce;">&quot;)
+</span><span style="color:#c0c5ce;">};
+</span>
+</code></pre>
+<p>Incredible piece of code, no?</p>
+<ul>
+<li>You can not have a push operation where there is a refrence (mut or imut) before hand. To make this easier to remember just assume that .push() method takes a mutable reference of vectors to write to it. Simply Rust will not let you modify anything as long as a refernce exists.</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#65737e;">//Works : 
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> v1_ref = &amp;v1[</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">];
+</span><span style="color:#c0c5ce;">v1.</span><span style="color:#96b5b4;">push</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">//Wont work : 
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> v1_ref2 = &amp;v1[</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">];
+</span><span style="color:#c0c5ce;">v1.</span><span style="color:#96b5b4;">push</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">4</span><span style="color:#c0c5ce;">);
+</span><span style="color:#65737e;">//println!(&quot;Printing a refrence that appeared before push : {}&quot;,v1_ref2); //Will break code
+</span>
+</code></pre>
+<ul>
+<li>We can iterate over vectors with mut or imut refrences, like so :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">for</span><span style="color:#c0c5ce;"> i in &amp;v1{
+</span><span style="color:#c0c5ce;">    println!(&quot;</span><span style="color:#a3be8c;">Item from v1 : </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,i);
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;"> i in &amp;</span><span style="color:#b48ead;">mut</span><span style="color:#c0c5ce;"> v1{
+</span><span style="color:#c0c5ce;">    *i=*i+</span><span style="color:#d08770;">50</span><span style="color:#c0c5ce;">;
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;"> i in &amp;v1{
+</span><span style="color:#c0c5ce;">    println!(&quot;</span><span style="color:#a3be8c;">Item from v1 : </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,i);
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<ul>
+<li>Vectors are sadly homogeneous in Rust (This also is a degin choice to security), but we can still do something like this :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug)]
+</span><span style="color:#b48ead;">enum </span><span style="color:#c0c5ce;">UniversalType{
+</span><span style="color:#c0c5ce;">    Text(String),
+</span><span style="color:#c0c5ce;">    Number(</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">),
+</span><span style="color:#c0c5ce;">    Charecter(</span><span style="color:#b48ead;">char</span><span style="color:#c0c5ce;">),
+</span><span style="color:#c0c5ce;">    Decimal(</span><span style="color:#b48ead;">f64</span><span style="color:#c0c5ce;">)
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">...
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> v3 = vec![UniversalType::Text(String::from(&quot;</span><span style="color:#a3be8c;">hello</span><span style="color:#c0c5ce;">&quot;)),UniversalType::Number(</span><span style="color:#d08770;">34</span><span style="color:#c0c5ce;">)];
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#a3be8c;">from v3 : </span><span style="color:#d08770;">{:?}</span><span style="color:#c0c5ce;">&quot;,v3.</span><span style="color:#96b5b4;">get</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">());
+</span>
+</code></pre>
+<h2>String</h2>
+<ul>
+<li>Can convert from &amp;str to String using .to_string(), ownership is no transffered. Contat using + does transffer ownership depending on refrence of not. Code like so :</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#65737e;">//----------String-----------
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> str1 : &amp;</span><span style="color:#b48ead;">str </span><span style="color:#c0c5ce;">= &quot;</span><span style="color:#a3be8c;">Hello, World!</span><span style="color:#c0c5ce;">&quot;;
+</span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> string1 : String = str1.</span><span style="color:#96b5b4;">to_string</span><span style="color:#c0c5ce;">();
+</span><span style="color:#c0c5ce;">string1.</span><span style="color:#96b5b4;">push_str</span><span style="color:#c0c5ce;">(&amp;str1); </span><span style="color:#65737e;">//Take refrence of str1 thus ownership of str1 is maintained.
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,str1);
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> string2 : String = String::from(&quot;</span><span style="color:#a3be8c;">Hello world, twice!</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> string3 = string2 + &amp;string1; </span><span style="color:#65737e;">//ownership of string2 is transffered. string1 remains the same.
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,string3);
+</span>
+</code></pre>
+<p>that thing with + sign is confusing, no? Well in the stad def the code is such that u can add a String with &amp;str, but &amp;string1 is a &amp;String, how does it work then? Rust does something called defer coerce, it converts the &amp;String to &amp;str.</p>
+<blockquote>
+<p>Notes : You can not add two String (String + String) in rust.
+Its this property that makes the usage of + for concat of String very weird, hence the format! macro.</p>
+</blockquote>
+<ul>
+<li>format macro:</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> temp_str1 = String::from(&quot;</span><span style="color:#a3be8c;">5</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> temo_str2 = String::from(&quot;</span><span style="color:#a3be8c;">7</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> string4 : String = format!(&quot;</span><span style="color:#d08770;">{}</span><span style="color:#96b5b4;">\&quot;</span><span style="color:#d08770;">{}</span><span style="color:#96b5b4;">\&#39;</span><span style="color:#a3be8c;"> tall</span><span style="color:#c0c5ce;">&quot;,&amp;temp_str1,&amp;temo_str2);
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#a3be8c;">Your height : </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;,string4);
+</span>
+</code></pre>
+<ul>
+<li>Idexing string using [] is not allowed. Simply put its because Rust doesn’t want us fools accessing a single byte when in some cases utf-8 characters are encoded with 2 bytes. Rust book explains is much better <a href="https://doc.rust-lang.org/book/ch08-02-strings.html#indexing-into-strings">here</a>.</li>
+<li>If you still want to index them, you can make references index or slices, both of which will return raw bytes and have no assurity.</li>
+</ul>
+<h2>HashMaps</h2>
+<ul>
+<li>HashMaps by default store a &lt;String,i32&gt; key-value pair, to define anything different :</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#c0c5ce;">#[</span><span style="color:#bf616a;">derive</span><span style="color:#c0c5ce;">(Debug)]
+</span><span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Data{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">player_id</span><span style="color:#c0c5ce;">:</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">age</span><span style="color:#c0c5ce;">:</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">team</span><span style="color:#c0c5ce;">:String,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">averagescore</span><span style="color:#c0c5ce;">:</span><span style="color:#b48ead;">f64
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> data : HashMap&lt;String,Data&gt; = HashMap::new();
+</span><span style="color:#c0c5ce;">data.</span><span style="color:#96b5b4;">insert</span><span style="color:#c0c5ce;">(String::from(&quot;</span><span style="color:#a3be8c;">Player1</span><span style="color:#c0c5ce;">&quot;),Data { player_id: </span><span style="color:#d08770;">237</span><span style="color:#c0c5ce;">, age: </span><span style="color:#d08770;">23</span><span style="color:#c0c5ce;">, team: String::from(&quot;</span><span style="color:#a3be8c;">Team A</span><span style="color:#c0c5ce;">&quot;), averagescore: </span><span style="color:#d08770;">34.7 </span><span style="color:#c0c5ce;">});
+</span>
+</code></pre>
+<ul>
+<li>there does not exist a macro to build hashmaps, we must depend on .insert() method. We could also use .collect() method that works on iter, like so:</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> players : Vec&lt;String&gt; = vec![String::from(&quot;</span><span style="color:#a3be8c;">Player2</span><span style="color:#c0c5ce;">&quot;),String::from(&quot;</span><span style="color:#a3be8c;">Player3</span><span style="color:#c0c5ce;">&quot;)];
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> player_data : Vec&lt;Data&gt; = vec![Data { player_id: </span><span style="color:#d08770;">238</span><span style="color:#c0c5ce;">, age: </span><span style="color:#d08770;">32</span><span style="color:#c0c5ce;">, team: String::from(&quot;</span><span style="color:#a3be8c;">Team B</span><span style="color:#c0c5ce;">&quot;), averagescore: </span><span style="color:#d08770;">35.7 </span><span style="color:#c0c5ce;">},Data { player_id: </span><span style="color:#d08770;">238</span><span style="color:#c0c5ce;">, age: </span><span style="color:#d08770;">21</span><span style="color:#c0c5ce;">, team: String::from(&quot;</span><span style="color:#a3be8c;">Team A</span><span style="color:#c0c5ce;">&quot;), averagescore: </span><span style="color:#d08770;">42.7 </span><span style="color:#c0c5ce;">}];
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> data_map2 : HashMap&lt;_,_&gt; = players.</span><span style="color:#96b5b4;">into_iter</span><span style="color:#c0c5ce;">().</span><span style="color:#96b5b4;">zip</span><span style="color:#c0c5ce;">(player_data.</span><span style="color:#96b5b4;">into_iter</span><span style="color:#c0c5ce;">()).</span><span style="color:#96b5b4;">collect</span><span style="color:#c0c5ce;">();
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,data_map2);
+</span>
+</code></pre>
+<p>the HashMap&lt;_,_&gt; is done such that the compier can fill in those values at compile time looking at the right hand side.</p>
+<ul>
+<li>Ownership in hashmaps : is the variables type implements copy trait then it is copies, else moved. Using references will not move the value, but we do need valid lifetime specifiers, which we will see shortly.</li>
+<li>We can access HaspMap values using the two ways just like in vectors :</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,data_map2[&quot;</span><span style="color:#a3be8c;">Player3</span><span style="color:#c0c5ce;">&quot;]);
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,data_map2.</span><span style="color:#96b5b4;">get</span><span style="color:#c0c5ce;">(&quot;</span><span style="color:#a3be8c;">Player2</span><span style="color:#c0c5ce;">&quot;).</span><span style="color:#96b5b4;">unwrap</span><span style="color:#c0c5ce;">());
+</span>
+</code></pre>
+<p>Using .get we can also do that very nice error handling as the example shown in Vectors section.</p>
+<ul>
+<li>We can simply overwrite key value pairs. If we want to only insert if key doesn’t exist, we can use .entry along with .or_insert(). .entry() return a Enums of type Entry that can differentiate between present and absetn keys, .or_insert() is am impl on type Entry that inserts if key doesn’t exists, like so :</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#c0c5ce;">data_map2.</span><span style="color:#96b5b4;">entry</span><span style="color:#c0c5ce;">(String::from(&quot;</span><span style="color:#a3be8c;">Player2</span><span style="color:#c0c5ce;">&quot;)).</span><span style="color:#96b5b4;">or_insert</span><span style="color:#c0c5ce;">(Data { player_id: </span><span style="color:#d08770;">400</span><span style="color:#c0c5ce;">, age: </span><span style="color:#d08770;">32</span><span style="color:#c0c5ce;">, team: String::from(&quot;</span><span style="color:#a3be8c;">Team B</span><span style="color:#c0c5ce;">&quot;), averagescore: </span><span style="color:#d08770;">35.7 </span><span style="color:#c0c5ce;">}); </span><span style="color:#65737e;">//Wont apply
+</span><span style="color:#c0c5ce;">data_map2.</span><span style="color:#96b5b4;">entry</span><span style="color:#c0c5ce;">(String::from(&quot;</span><span style="color:#a3be8c;">Player1</span><span style="color:#c0c5ce;">&quot;)).</span><span style="color:#96b5b4;">or_insert</span><span style="color:#c0c5ce;">(Data { player_id: </span><span style="color:#d08770;">237</span><span style="color:#c0c5ce;">, age: </span><span style="color:#d08770;">23</span><span style="color:#c0c5ce;">, team: String::from(&quot;</span><span style="color:#a3be8c;">Team A</span><span style="color:#c0c5ce;">&quot;), averagescore: </span><span style="color:#d08770;">34.7 </span><span style="color:#c0c5ce;">}); </span><span style="color:#65737e;">//Will apply
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,data_map2);
+</span>
+</code></pre>
+<blockquote>
+<p>Notes : .entry().or_insert() return back a reference to the value present to the given key.</p>
+</blockquote>
+<ul>
+<li>Updating values present in HashMaps using refrences (This feels very much like C):</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> hash3 : HashMap&lt;String,</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">&gt; = HashMap::new();
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> text = &quot;</span><span style="color:#a3be8c;">she sells sea shells at the sea shore</span><span style="color:#c0c5ce;">&quot;;
+</span><span style="color:#b48ead;">for</span><span style="color:#c0c5ce;"> i in text.</span><span style="color:#96b5b4;">split_whitespace</span><span style="color:#c0c5ce;">(){
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> count = hash3.</span><span style="color:#96b5b4;">entry</span><span style="color:#c0c5ce;">(i.</span><span style="color:#96b5b4;">to_string</span><span style="color:#c0c5ce;">()).</span><span style="color:#96b5b4;">or_insert</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">0</span><span style="color:#c0c5ce;">);
+</span><span style="color:#c0c5ce;">    *count+=</span><span style="color:#d08770;">1</span><span style="color:#c0c5ce;">;
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">println!(&quot;</span><span style="color:#d08770;">{:#?}</span><span style="color:#c0c5ce;">&quot;,hash3);
+</span>
+</code></pre>
+<h2>Generics : Function overloading alternatives. kind of</h2>
+<ul>
+<li>
+<p>HGnerics help with function overloading but also restricting methods bassaedon types and traits.</p>
+</li>
+<li>
+<p>Generics on functions (We'll get back to this later) : You can not compare any type T unless the type ad the std::cmp::PartialOrd trait is implmented, meaning to compare generic we need that trait.</p>
+</li>
+<li>
+<p>Genrics on struct :</p>
+<ul>
+<li>For a given struct or fn the T should be the same type everywhere, internally the compiler converts T to its conrete type multiple types if needed, th can be see clealy wwth the given example belo. This means if you possibly wat two different types of generices u need two generics:</li>
+</ul>
+</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Pairs&lt;T&gt;{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">: T,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">: T,
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">PairsHetro&lt;T,U&gt;{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">:T,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">:U,
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+</span><span style="color:#c0c5ce;">    println!(&quot;</span><span style="color:#a3be8c;">Hello, world!</span><span style="color:#c0c5ce;">&quot;);
+</span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p1 = Pairs{ x:</span><span style="color:#d08770;">12</span><span style="color:#c0c5ce;">,y:</span><span style="color:#d08770;">23 </span><span style="color:#c0c5ce;">}; </span><span style="color:#65737e;">//Works : Implicit definition of T is done by compiler as i32 for p1
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">//let p2 : Pairs&lt;T&gt; = { x:23,y:34  }; //Wont work cus main function doesnt know what &lt;T&gt; is
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p2 : Pairs&lt;</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">&gt; = Pairs{ x:</span><span style="color:#d08770;">23</span><span style="color:#c0c5ce;">,y:</span><span style="color:#d08770;">34 </span><span style="color:#c0c5ce;">}; </span><span style="color:#65737e;">//Works explicit definition of T
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p3 = Pairs{ x:</span><span style="color:#d08770;">2.3</span><span style="color:#c0c5ce;">,y:</span><span style="color:#d08770;">23 </span><span style="color:#c0c5ce;">}; </span><span style="color:#65737e;">//Wont work;
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p3 = PairsHetro{x:</span><span style="color:#d08770;">2.3</span><span style="color:#c0c5ce;">,y:</span><span style="color:#d08770;">23</span><span style="color:#c0c5ce;">}; </span><span style="color:#65737e;">//Works!
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<blockquote>
+<p>Notes : Rust accomplishes this by performing monomorphization of the code using generics at compile time. Monomorphization is the process of turning generic code into specific code by filling in the concrete types that are used when compiled. This way we have 0...absolute 0 speed diff in runtime.</p>
+</blockquote>
+<ul>
+<li>Generics on enums :
+<ul>
+<li>Here we can see exaclty how Option enum was defined in std :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">enum </span><span style="color:#c0c5ce;">Option&lt;T&gt;{
+</span><span style="color:#c0c5ce;">    Some(T),
+</span><span style="color:#c0c5ce;">    None
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<ul>
+<li>And also Result enum from std :</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">enum </span><span style="color:#c0c5ce;">Result&lt;T,E&gt;{
+</span><span style="color:#c0c5ce;">    Ok(T),
+</span><span style="color:#c0c5ce;">    Err(E)
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+</li>
+<li>Generics on imple, we can ue generic types in impl in very nice ways. You can restrict some method to when geneeic of some particula type. You can also make some methods available to eveything no matter the the generuc turned out be, like so:</li>
+</ul>
+<pre style="background-color:#2b303b;" lang="rs"><code>
+<span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">PairsHetro&lt;T,U&gt;{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">:T,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">:U,
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">use </span><span style="color:#c0c5ce;">std::fmt::Debug;
+</span><span style="color:#b48ead;">impl</span><span style="color:#c0c5ce;">&lt;T:Debug,U:Debug&gt; PairsHetro&lt;T,U&gt;{ </span><span style="color:#65737e;">//These methods are available to all T and U that have Debug trait
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">pretty_print</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">:&amp;</span><span style="color:#b48ead;">Self</span><span style="color:#c0c5ce;">){
+</span><span style="color:#c0c5ce;">    println!(&quot;</span><span style="color:#a3be8c;"> (</span><span style="color:#d08770;">{:#?}</span><span style="color:#a3be8c;">,</span><span style="color:#d08770;">{:#?}</span><span style="color:#a3be8c;">) </span><span style="color:#c0c5ce;">&quot;,</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.x,</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.y);
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">impl </span><span style="color:#c0c5ce;">PairsHetro&lt;</span><span style="color:#b48ead;">i32</span><span style="color:#c0c5ce;">,</span><span style="color:#b48ead;">f32</span><span style="color:#c0c5ce;">&gt;{
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">add2</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">:&amp;</span><span style="color:#b48ead;">mut Self</span><span style="color:#c0c5ce;">){
+</span><span style="color:#c0c5ce;">        </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.x+=</span><span style="color:#d08770;">2</span><span style="color:#c0c5ce;">;
+</span><span style="color:#c0c5ce;">        </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.y+=</span><span style="color:#d08770;">2.0</span><span style="color:#c0c5ce;">;
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">} 
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#65737e;">//In all trait check happen on generics going into imp and type checks happen on generics going into
+</span><span style="color:#65737e;">//the object (struct or enu or whatev)
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p3 = PairsHetro{x:</span><span style="color:#d08770;">2.3</span><span style="color:#c0c5ce;">,y:</span><span style="color:#d08770;">23</span><span style="color:#c0c5ce;">}; </span><span style="color:#65737e;">//Works!
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let mut</span><span style="color:#c0c5ce;"> p4 = PairsHetro{x:</span><span style="color:#d08770;">32</span><span style="color:#c0c5ce;">,y:</span><span style="color:#d08770;">3.2</span><span style="color:#c0c5ce;">};
+</span><span style="color:#c0c5ce;">    </span><span style="color:#65737e;">//p3.add2(); //Does not work
+</span><span style="color:#c0c5ce;">    p4.</span><span style="color:#96b5b4;">add2</span><span style="color:#c0c5ce;">(); </span><span style="color:#65737e;">//works
+</span><span style="color:#c0c5ce;">    p3.</span><span style="color:#96b5b4;">pretty_print</span><span style="color:#c0c5ce;">(); </span><span style="color:#65737e;">//Work 
+</span><span style="color:#c0c5ce;">    p4.</span><span style="color:#96b5b4;">pretty_print</span><span style="color:#c0c5ce;">(); </span><span style="color:#65737e;">//Works
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
+<blockquote>
+<p>Notes : trait check go into impl generics, type checks go into object generics (strucor enum), see in above example.</p>
+</blockquote>
+<ul>
+<li>Its not compulsory that them impl methods have to use the same genrics as their objects, they can introduce new generics thenselves, the examples for the book makes this clear, like sso :</li>
+</ul>
+<pre lang="rs" style="background-color:#2b303b;"><code>
+<span style="color:#b48ead;">struct </span><span style="color:#c0c5ce;">Point&lt;X1, Y1&gt; {
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">x</span><span style="color:#c0c5ce;">: X1,
+</span><span style="color:#c0c5ce;">    </span><span style="color:#bf616a;">y</span><span style="color:#c0c5ce;">: Y1,
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">impl</span><span style="color:#c0c5ce;">&lt;X1, Y1&gt; Point&lt;X1, Y1&gt; {
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">mixup</span><span style="color:#c0c5ce;">&lt;X2, Y2&gt;(</span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">, </span><span style="color:#bf616a;">other</span><span style="color:#c0c5ce;">: Point&lt;X2, Y2&gt;) -&gt; Point&lt;X1, Y2&gt; {
+</span><span style="color:#c0c5ce;">        Point {
+</span><span style="color:#c0c5ce;">            x: </span><span style="color:#bf616a;">self</span><span style="color:#c0c5ce;">.x,
+</span><span style="color:#c0c5ce;">            y: other.y,
+</span><span style="color:#c0c5ce;">        }
+</span><span style="color:#c0c5ce;">    }
+</span><span style="color:#c0c5ce;">}
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#b48ead;">fn </span><span style="color:#8fa1b3;">main</span><span style="color:#c0c5ce;">() {
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p1 = Point { x: </span><span style="color:#d08770;">5</span><span style="color:#c0c5ce;">, y: </span><span style="color:#d08770;">10.4 </span><span style="color:#c0c5ce;">};
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p2 = Point { x: &quot;</span><span style="color:#a3be8c;">Hello</span><span style="color:#c0c5ce;">&quot;, y: &#39;</span><span style="color:#a3be8c;">c</span><span style="color:#c0c5ce;">&#39; };
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">    </span><span style="color:#b48ead;">let</span><span style="color:#c0c5ce;"> p3 = p1.</span><span style="color:#96b5b4;">mixup</span><span style="color:#c0c5ce;">(p2);
+</span><span style="color:#c0c5ce;">
+</span><span style="color:#c0c5ce;">    println!(&quot;</span><span style="color:#a3be8c;">p3.x = </span><span style="color:#d08770;">{}</span><span style="color:#a3be8c;">, p3.y = </span><span style="color:#d08770;">{}</span><span style="color:#c0c5ce;">&quot;, p3.x, p3.y);
+</span><span style="color:#c0c5ce;">}
+</span>
+</code></pre>
