@@ -1,4 +1,4 @@
-## RESOURCES : 
+    ## RESOURCES : 
 
 There are some of the resources I found VERRRYYYYY useful when learning rust the incredible language!
 
@@ -383,4 +383,11 @@ fn main() {
 
     println!("p3.x = {}, p3.y = {}", p3.x, p3.y);
 }
+``` 
+
+## Traits  
+- here we will be able to provide the std::cmp::PartialOrd trait to our generic!
+- To define new traits with and witout default : 
+```
+
 ```
