@@ -388,6 +388,75 @@ fn main() {
 ## Traits  
 - here we will be able to provide the std::cmp::PartialOrd trait to our generic!
 - To define new traits with and witout default : 
+```rs
+use std::fmt::Debug;
+#[derive(Debug)]
+struct Coords<T,U>{
+    x:T,
+    y:U,
+}
+pub trait RealCoords{
+    fn dist_from_origin(self:&Self)->f32; //No default
+}
+
+impl RealCoords for Coords<f32,f32>{ //Trait RealCoord is only implemented when T and U are f32
+    fn dist_from_origin(self:&Self) ->f32 {
+        return f32::from((self.x.powi(2)+self.y.powi(2)).sqrt())    
+    }
+}
+```
+> When u try and mix and match trait and type boudns rust goes mad, so lets at the moment consider only one bound at a time.
+- With default definitions for trait functions: 
+```rs
+struct Details<T,U>{
+    age : U,
+    id : T
+}
+
+trait PrettyPrint {
+    fn print_pretty(&self){ //with default
+        println!("No specific impl of PrettyPrint traitr :(");
+    }
+}
+
+impl<T,U> PrettyPrint for Coords<T,U>
+ where T: Debug,
+       U:Debug
+{ //Traits bounds with better syntax
+    fn print_pretty(&self) {
+        println!("( {:#?},{:#?} )",self.x,self.y);
+    }
+}
+
+impl<T,U> PrettyPrint for Details<T,U>{} //Fills in default
 ```
 
+- You can also return "any" type that impl a particular trait (You can only return one type from one function)
+```rs
+fn return_type_with_printprettty_trait(age : i32 , id : i32) -> impl PrettyPrint{
+    Details{
+        age,
+        id
+    }
+}
+
 ```
+- To bring all the above codes together: 
+```rs
+fn main() {
+    println!("Hello, world!");
+    let coord1 = Coords{x:2.3,y:3.4};
+    let coord2 = Coords{x:3,y:4};
+    println!("distance : {}",coord1.dist_from_origin());
+    coord1.print_pretty();
+    //println!("distance : {}",coord2.dist_from_origin()); //doesnt work
+    coord2.print_pretty();
+    let deet1 = Details{ age:"32",id:"237" };
+    deet1.print_pretty();
+    let deet2 = return_type_with_printprettty_trait(32,1234);
+}
+```
+- So we had written a generic largest function in the Generics module (its commentd out there), which was a causing a problem that trait T has not implem std::cmp::PartialOrd was not impl, we are not equppied to solve this!
+
+
+## Lifetime and validating refrences
