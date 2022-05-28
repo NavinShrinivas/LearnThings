@@ -1,8 +1,3 @@
-    ## RESOURCES : 
-
-There are some of the resources I found VERRRYYYYY useful when learning rust the incredible language!
-
-- [Module Systems](https://www.sheshbabu.com/posts/rust-module-system/)
 
 
 # Ultimate Rust cheat sheet : 
@@ -128,6 +123,7 @@ impl DayType{
 - Everything is private in rust, we can make it public.
 - If ther exists modules in a folder, the folder must have a mod.rs which define all the modules in the folder and also pub or not.
 - Once added in the Module tree, the given module can be accessed from other files using the correct path.
+- [best resource for module system](https://www.sheshbabu.com/posts/rust-module-system/)
 
 ## Vectors : Allocated in the heap
 
@@ -460,3 +456,74 @@ fn main() {
 
 
 ## Lifetime and validating refrences
+- Lifetimes are another generic, every reference in rust has its own lifetime. So what is this life times problem, well this really opens my eyes to the flaws is other languages : 
+```rs
+fn main(){
+    let r;
+    //r has no value so cant print 
+    {
+        let x = 5;
+        r=&x;
+    }
+    println!("R : {}",r); //Will give error cus r is refrencing to x whos lifetime/scope was within the inner brackets.
+  
+}
+
+```
+In this case we simply say r lives longer than x.
+- The borrow checker 
+![borrow](./borrow.png)
+- First function with explicit life times : 
+```rs
+/*
+ *
+ *Doesnt work!
+ *fn longest1(x:&str , y:&str) -> &str{
+ *    if x.len() > y.len(){
+ *        x
+ *    }else{
+ *        y
+ *    }
+ *}
+ *
+ */
+
+fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
+    //Generic life times simply tell that the returned 
+    //value will live for as long as the two inputs
+    if x.len() > y.len(){
+        x
+    }else{
+        y
+    }
+}
+```
+- Note that by explicitly listing lifetimes we are not changing the lifes of any of the refrences or variables, we are simply and only relating these varaibles using lifetimes.
+- Note : We don’t get in trouble as long are returns or any of the variables have life times that re surrounded by larger lifetimes. This doesn’t make much sense does it? Well from the book  : 
+> Ver very very very imp Note : When we pass concrete references to longest, the concrete lifetime that is substituted for 'a is the part of the scope of x that overlaps with the scope of y. In other words, the generic lifetime 'a will get the concrete lifetime that is equal to the smaller of the lifetimes of x and y. Because we’ve annotated the returned reference with the same lifetime parameter 'a, the returned reference will also be valid for the length of the smaller of the lifetimes of x and y.
+- To warrant the above, here is code examples : 
+```rs
+ /*
+     *Doesnt work
+     *let string1 = String::from("long string is long");
+     *let result;
+     *{
+     *    let string2 = String::from("xyz");
+     *    result = longest2(string1.as_str(), string2.as_str());
+     *}
+     *println!("The longest string is {}", result);
+     */
+    //In above code 'a is replaced with concrete life time of smaller life time that is (string2)
+    //but return result has a bigger lifetime and hence causes error.
+
+    //Works : 
+    let string1 = String::from("long string is long");
+    {
+        let string2 = String::from("xyz");
+        let result = longest2(string1.as_str(), string2.as_str());
+        println!("The longest string is {}", result);
+    }
+    //Life time of 'a is replaced with that of string2 but return result also has same life time
+    //and hence no error and vialotions.
+```
+- As long as the lifetime of the return value matches to that of the input variables, we are good to go! Such a concepts doesn't usually exists in other languages, The more your learn!
