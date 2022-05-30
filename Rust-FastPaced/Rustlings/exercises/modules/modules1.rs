@@ -1,7 +1,7 @@
 // modules1.rs
 // Make me compile! Execute `rustlings hint modules1` for hints :)
 
-// I AM NOT DONE
+// I AM DONE
 
 mod sausage_factory {
     // Don't let anybody outside of this module see this!

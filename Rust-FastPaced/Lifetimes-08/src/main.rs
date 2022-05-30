@@ -32,6 +32,10 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
     }
 }
 
+struct RefStruct<'a>{
+    str_ref : &'a str
+}
+
 fn main() {
     let str1 = String::from("asdfkjhsdfjgh");
     let str2 : &str = "sdfgd";
@@ -60,4 +64,10 @@ fn main() {
     }
     //Life time of 'a is replaced with that of string2 but return result also has same life time
     //and hence no error and vialotions.
+    
+
+
+    let new_struct = RefStruct{
+        str_ref : &"Hello world"
+    };
 }

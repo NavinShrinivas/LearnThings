@@ -527,3 +527,7 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
     //and hence no error and vialotions.
 ```
 - As long as the lifetime of the return value matches to that of the input variables, we are good to go! Such a concepts doesn't usually exists in other languages, The more your learn!
+- Lifetimes in structs :So far all struct we had seen where ownning the data entirely, so how do we store refrences?
+```rs
+
+```
