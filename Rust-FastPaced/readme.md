@@ -455,7 +455,7 @@ fn main() {
 - So we had written a generic largest function in the Generics module (its commentd out there), which was a causing a problem that trait T has not implem std::cmp::PartialOrd was not impl, we are not equppied to solve this!
 
 
-## Lifetime and validating refrences
+## Lifetime and validating refrences : Not so complete
 - Lifetimes are another generic, every reference in rust has its own lifetime. So what is this life times problem, well this really opens my eyes to the flaws is other languages : 
 ```rs
 fn main(){
@@ -530,4 +530,29 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
 - Lifetimes in structs :So far all struct we had seen where ownning the data entirely, so how do we store refrences?
 ```rs
 
+``` 
+> Idiomatic rust is rust code that is written with the help of closure and iterators and `functional programming constructs`
+
+## Closure 
+- Closures are anonymous function that can be stored in a varaible.
+- Unlike function, closure can capture values of the current scope they are working in.
+- The need for clousures in Rust book is written in a very verycomplex way, to simply put it, closures are used where we need the result of a function in many places but want to call the function only once in the needed place.
+- Basic closures : 
+```rs
+  let first_closure = |var : String| {
+        sleep(Duration::from_secs(2));
+        println!("{}",var);
+    };
 ```
+> Note : in the above we see the closure parameters have typ e annotation, in some cases it doesn’t need em.
+- So as long as a closure is not called, the compiler throws an error of type annotations being needed, but once we call the function ones, the compiler "learns" the concrete types of closure. The example below fails to work : 
+```rs
+    let second_closure = |num|{
+        //something here
+        println!("{}",num);
+    };
+    second_closure(String::from("Hello"));
+    second_closure(3); //Doesn't work
+```
+Note that wok "concrete", this give entry to generic types in closures!
+- Remember the point where closures were used to reduce number of time the function is called? Here we see it happen using struct. This is often know as cache or memoization in programming, in rust we can also better represent it using "lazy eval" .
