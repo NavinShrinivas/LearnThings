@@ -534,6 +534,7 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
 > Idiomatic rust is rust code that is written with the help of closure and iterators and `functional programming constructs`
 
 ## Closure 
+
 - Closures are anonymous function that can be stored in a varaible.
 - Unlike function, closure can capture values of the current scope they are working in.
 - The need for clousures in Rust book is written in a very verycomplex way, to simply put it, closures are used where we need the result of a function in many places but want to call the function only once in the needed place.
@@ -544,7 +545,7 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
         println!("{}",var);
     };
 ```
-> Note : in the above we see the closure parameters have typ e annotation, in some cases it doesn’t need em.
+> Note : in the above we see the closure parameters have type annotation, in some cases it doesn’t need em.
 - So as long as a closure is not called, the compiler throws an error of type annotations being needed, but once we call the function ones, the compiler "learns" the concrete types of closure. The example below fails to work : 
 ```rs
     let second_closure = |num|{
@@ -554,5 +555,98 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
     second_closure(String::from("Hello"));
     second_closure(3); //Doesn't work
 ```
-Note that wok "concrete", this give entry to generic types in closures!
+Note that word "concrete", this give entry to generic types in closures!
 - Remember the point where closures were used to reduce number of time the function is called? Here we see it happen using struct. This is often know as cache or memoization in programming, in rust we can also better represent it using "lazy eval" .
+> Note : These struct with value and function gives feels like that for set and use states in reactJS
+    - To build a struct that holds a closure along with its result, we must first mention "a" type for the closure.
+    - All closure implement any one for the following :  "Fn","FnMut","FnOnce" (Note the capital F) trait.
+    - To call functions stored in struct fields use () surrounding the function call. See below :
+    - Code (Modified quite a bit from the book) : 
+```rs
+struct Cacher<T,V>{
+    calculation : T,
+    value : Option<V>
+}
+
+impl<T> Cacher<T,u32>
+where
+    T : Fn(u32) -> u32,
+    //Note Fn is a trait fn is the usual keyword
+{
+    fn new(calculation : T) -> Cacher<T,u32>{
+        Cacher { calculation, value: None }
+    }
+
+    fn get_value(&mut self,args : u32) -> Option<u32>{
+        match self.value{
+            None => {
+                let res = ( self.calculation )(args);
+                self.value = Some(res);
+                return self.value;
+            }
+            _ => {
+                return self.value;
+            }
+        }
+    }
+}
+
+fn main(){
+    let third_closure = |var|{
+        println!("Printing var : {}",var);
+        return var+3;
+    };
+    let mut state_things = Cacher::new(third_closure); //Ends up giving var a concrete value of u32 Cus of which:
+    //third_closure(String::from("Hello")); //Wont work!
+    let res_one = state_things.get_value(100).unwrap(); //Saves the value plus returns it
+    println!("{}",res_one);
+    let res_two = state_things.get_value(110).unwrap(); //Note tht function is not called second time and neither is the value changed.
+    println!("{}",res_two);
+} 
+```
+To make a little more sense to usage of closures in rust : 
+![image](./closures.png)
+- Now we did see that the closure simply stores the result from the first argument that were passed into the "get_value", what if I wanna call the function is a new args is passed, else return the stored value? Here we can start using HashMaps!
+Also here I write the cacherin such a way the input args and output args can be anything (can even be made diff) : 
+```rs
+struct BetterCacher<T,V>{
+    calculation : T,
+    value : HashMap<V,V> //Hashmaps surround value in Option either way
+}
+
+impl<T,V> BetterCacher<T,V>
+where
+    T : Fn(V) -> V,
+    V : Eq + Hash + Copy //This entire thing fails if the generic doesnt have copy trait
+{
+    fn new(calculation : T) -> BetterCacher<T, V>{
+        BetterCacher { calculation, value: HashMap::new() }
+    }
+
+    fn get_or_generate_value(&mut self, arg : V) -> Option<V>{
+        match self.value.get(&arg){
+            None => {
+                let calculated_value = ( self.calculation )(arg);
+                self.value.insert(arg,calculated_value);
+                return Some(calculated_value);
+            },
+            Some(key_value) => {
+                return Some(*key_value);
+            }
+        }
+    }
+}
+fn main() {
+    let fourth_closure = |var|{
+        println!("calculating.... res {:#?}",var);
+        return var;
+    };
+    let mut state_things2 = BetterCacher::new(fourth_closure);
+    let res_one = state_things2.get_or_generate_value(100).unwrap(); //Saves the value plus returns it
+    println!("{}",res_one); //Will also print "calculating..."
+    let res_two = state_things2.get_or_generate_value(110).unwrap(); //New value is generated and is stored.
+    println!("{}",res_two); //Will also print "calculating..." 
+    println!("{} Stored value retrived",state_things2.get_or_generate_value(110).unwrap()); //Wont print "calculating..." cus already stored.
+
+}
+```
