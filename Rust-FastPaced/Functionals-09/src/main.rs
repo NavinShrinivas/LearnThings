@@ -96,4 +96,14 @@ fn main() {
     println!("{}",res_two); //Will also print "calculating..." 
     println!("{} Stored value retrived",state_things2.get_or_generate_value(110).unwrap()); //Wont print "calculating..." cus already stored.
 
+
+
+    //Unlike functions, closure can also capture the scope of variables around them, like so:
+    let str1 : String = String::from("Navin");
+
+    let closure_capture = |last_name| -> String{
+        return format!("{} {}",str1,last_name);
+    };
+
+    println!("Full name : {} ",closure_capture(String::from("Shrinivas")));
 }

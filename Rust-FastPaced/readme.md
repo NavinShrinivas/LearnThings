@@ -650,3 +650,14 @@ fn main() {
 
 }
 ```
+- As mentioned before, closure can capture variables from near by scope. But to do this rust takes up a memory space to store values needed in the closure causing a mem overhead, either way code : 
+```rs
+    let str1 : String = String::from("Navin");
+
+    let closure_capture = |last_name| -> String{
+        return format!("{} {}",str1,last_name);
+    };
+
+    println!("Full name : {} ",closure_capture(String::from("Shrinivas")));
+
+```
