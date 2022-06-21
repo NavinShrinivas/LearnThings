@@ -1,17 +1,35 @@
 // iterators4.rs
 
-// I AM NOT DONE
+// I AM DONE
 
 pub fn factorial(num: u64) -> u64 {
     // Complete this function to return the factorial of num
     // Do not use:
-    // - return
+    // - return, success
     // Try not to use:
-    // - imperative style loops (for, while)
-    // - additional variables
+    // - imperative style loops (for, while), success
+    // - additional variables, failed
     // For an extra challenge, don't use:
-    // - recursion
+    // - recursion, success
     // Execute `rustlings hint iterators4` for hints.
+    /*
+     *let mut res : u64 = 1;
+     *let mut copy = num;
+     *loop{
+     *    if copy == 0{
+     *        break;
+     *    }else{
+     *        res*=copy;
+     *        copy-=1;
+     *    }
+     *}
+     *res
+     */
+    let mut x : u64 = 1;
+    (1..num+1).collect::<Vec<u64>>().iter().map(|u|{
+        x*=u;
+        x
+    }).collect::<Vec<u64>>().pop().unwrap()
 }
 
 #[cfg(test)]

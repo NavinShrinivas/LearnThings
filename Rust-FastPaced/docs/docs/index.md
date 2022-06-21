@@ -1,5 +1,3 @@
-
-
 # Ultimate Rust cheat sheet : 
 
 ## Tuples  
@@ -305,7 +303,7 @@ let p1 = Pairs{ x:12,y:23 }; //Works : Implicit definition of T is done by compi
 }
 ```
 > Notes : Rust accomplishes this by performing monomorphization of the code using generics at compile time. Monomorphization is the process of turning generic code into specific code by filling in the concrete types that are used when compiled. This way we have 0...absolute 0 speed diff in runtime.
-- Generics on enums :
+    - Generics on enums :
     - Here we can see exaclty how Option enum was defined in std : 
     ```rs
     enum Option<T>{
@@ -320,232 +318,232 @@ let p1 = Pairs{ x:12,y:23 }; //Works : Implicit definition of T is done by compi
         Err(E)
     }
     ```
-- Generics on imple, we can ue generic types in impl in very nice ways. You can restrict some method to when geneeic of some particula type. You can also make some methods available to eveything no matter the the generuc turned out be, like so:
-```rs
-struct PairsHetro<T,U>{
-    x:T,
-    y:U,
-}
-
-use std::fmt::Debug;
-impl<T:Debug,U:Debug> PairsHetro<T,U>{ //These methods are available to all T and U that have Debug trait
-    fn pretty_print(self:&Self){
-    println!(" ({:#?},{:#?}) ",self.x,self.y);
+    - Generics on imple, we can ue generic types in impl in very nice ways. You can restrict some method to when geneeic of some particula type. You can also make some methods available to eveything no matter the the generuc turned out be, like so:
+    ```rs
+    struct PairsHetro<T,U>{
+        x:T,
+        y:U,
     }
-}
 
-impl PairsHetro<i32,f32>{
-    fn add2(self:&mut Self){
-        self.x+=2;
-        self.y+=2.0;
-    }
-} 
-
-//In all trait check happen on generics going into imp and type checks happen on generics going into
-//the object (struct or enu or whatev)
-
-fn main() {
-
-    let p3 = PairsHetro{x:2.3,y:23}; //Works!
-    let mut p4 = PairsHetro{x:32,y:3.2};
-    //p3.add2(); //Does not work
-    p4.add2(); //works
-    p3.pretty_print(); //Work 
-    p4.pretty_print(); //Works
-}
-```
-> Notes : trait check go into impl generics, type checks go into object generics (strucor enum), see in above example.
-- Its not compulsory that them impl methods have to use the same genrics as their objects, they can introduce new generics thenselves, the examples for the book makes this clear, like sso : 
-```rs
-struct Point<X1, Y1> {
-    x: X1,
-    y: Y1,
-}
-
-impl<X1, Y1> Point<X1, Y1> {
-    fn mixup<X2, Y2>(self, other: Point<X2, Y2>) -> Point<X1, Y2> {
-        Point {
-            x: self.x,
-            y: other.y,
+    use std::fmt::Debug;
+    impl<T:Debug,U:Debug> PairsHetro<T,U>{ //These methods are available to all T and U that have Debug trait
+        fn pretty_print(self:&Self){
+        println!(" ({:#?},{:#?}) ",self.x,self.y);
         }
     }
-}
 
-fn main() {
-    let p1 = Point { x: 5, y: 10.4 };
-    let p2 = Point { x: "Hello", y: 'c' };
+    impl PairsHetro<i32,f32>{
+        fn add2(self:&mut Self){
+            self.x+=2;
+            self.y+=2.0;
+        }
+    } 
 
-    let p3 = p1.mixup(p2);
+    //In all trait check happen on generics going into imp and type checks happen on generics going into
+    //the object (struct or enu or whatev)
 
-    println!("p3.x = {}, p3.y = {}", p3.x, p3.y);
-}
-``` 
+    fn main() {
 
-## Traits  
-- here we will be able to provide the std::cmp::PartialOrd trait to our generic!
-- To define new traits with and witout default : 
-```rs
-use std::fmt::Debug;
-#[derive(Debug)]
-struct Coords<T,U>{
-    x:T,
-    y:U,
-}
-pub trait RealCoords{
-    fn dist_from_origin(self:&Self)->f32; //No default
-}
-
-impl RealCoords for Coords<f32,f32>{ //Trait RealCoord is only implemented when T and U are f32
-    fn dist_from_origin(self:&Self) ->f32 {
-        return f32::from((self.x.powi(2)+self.y.powi(2)).sqrt())    
+        let p3 = PairsHetro{x:2.3,y:23}; //Works!
+        let mut p4 = PairsHetro{x:32,y:3.2};
+        //p3.add2(); //Does not work
+        p4.add2(); //works
+        p3.pretty_print(); //Work 
+        p4.pretty_print(); //Works
     }
-}
-```
-> When u try and mix and match trait and type boudns rust goes mad, so lets at the moment consider only one bound at a time.
-- With default definitions for trait functions: 
-```rs
-struct Details<T,U>{
-    age : U,
-    id : T
-}
-
-trait PrettyPrint {
-    fn print_pretty(&self){ //with default
-        println!("No specific impl of PrettyPrint traitr :(");
+    ```
+    > Notes : trait check go into impl generics, type checks go into object generics (strucor enum), see in above example.
+    - Its not compulsory that them impl methods have to use the same genrics as their objects, they can introduce new generics thenselves, the examples for the book makes this clear, like sso : 
+    ```rs
+    struct Point<X1, Y1> {
+        x: X1,
+        y: Y1,
     }
-}
 
-impl<T,U> PrettyPrint for Coords<T,U>
- where T: Debug,
-       U:Debug
-{ //Traits bounds with better syntax
-    fn print_pretty(&self) {
-        println!("( {:#?},{:#?} )",self.x,self.y);
+    impl<X1, Y1> Point<X1, Y1> {
+        fn mixup<X2, Y2>(self, other: Point<X2, Y2>) -> Point<X1, Y2> {
+            Point {
+                x: self.x,
+                y: other.y,
+            }
+        }
     }
-}
 
-impl<T,U> PrettyPrint for Details<T,U>{} //Fills in default
-```
+    fn main() {
+        let p1 = Point { x: 5, y: 10.4 };
+        let p2 = Point { x: "Hello", y: 'c' };
 
-- You can also return "any" type that impl a particular trait (You can only return one type from one function)
-```rs
-fn return_type_with_printprettty_trait(age : i32 , id : i32) -> impl PrettyPrint{
-    Details{
-        age,
-        id
+        let p3 = p1.mixup(p2);
+
+        println!("p3.x = {}, p3.y = {}", p3.x, p3.y);
     }
-}
+    ``` 
 
-```
-- To bring all the above codes together: 
-```rs
-fn main() {
-    println!("Hello, world!");
-    let coord1 = Coords{x:2.3,y:3.4};
-    let coord2 = Coords{x:3,y:4};
-    println!("distance : {}",coord1.dist_from_origin());
-    coord1.print_pretty();
-    //println!("distance : {}",coord2.dist_from_origin()); //doesnt work
-    coord2.print_pretty();
-    let deet1 = Details{ age:"32",id:"237" };
-    deet1.print_pretty();
-    let deet2 = return_type_with_printprettty_trait(32,1234);
-}
-```
-- So we had written a generic largest function in the Generics module (its commentd out there), which was a causing a problem that trait T has not implem std::cmp::PartialOrd was not impl, we are not equppied to solve this!
-
-
-## Lifetime and validating refrences : Not so complete
-- Lifetimes are another generic, every reference in rust has its own lifetime. So what is this life times problem, well this really opens my eyes to the flaws is other languages : 
-```rs
-fn main(){
-    let r;
-    //r has no value so cant print 
-    {
-        let x = 5;
-        r=&x;
+    ## Traits  
+    - here we will be able to provide the std::cmp::PartialOrd trait to our generic!
+    - To define new traits with and witout default : 
+    ```rs
+    use std::fmt::Debug;
+    #[derive(Debug)]
+    struct Coords<T,U>{
+        x:T,
+        y:U,
     }
-    println!("R : {}",r); //Will give error cus r is refrencing to x whos lifetime/scope was within the inner brackets.
-  
-}
-
-```
-In this case we simply say r lives longer than x.
-- The borrow checker 
-![borrow](./borrow.png)
-- First function with explicit life times : 
-```rs
-/*
- *
- *Doesnt work!
- *fn longest1(x:&str , y:&str) -> &str{
- *    if x.len() > y.len(){
- *        x
- *    }else{
- *        y
- *    }
- *}
- *
- */
-
-fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
-    //Generic life times simply tell that the returned 
-    //value will live for as long as the two inputs
-    if x.len() > y.len(){
-        x
-    }else{
-        y
+    pub trait RealCoords{
+        fn dist_from_origin(self:&Self)->f32; //No default
     }
-}
-```
-- Note that by explicitly listing lifetimes we are not changing the lifes of any of the refrences or variables, we are simply and only relating these varaibles using lifetimes.
-- Note : We don’t get in trouble as long are returns or any of the variables have life times that re surrounded by larger lifetimes. This doesn’t make much sense does it? Well from the book  : 
-> Ver very very very imp Note : When we pass concrete references to longest, the concrete lifetime that is substituted for 'a is the part of the scope of x that overlaps with the scope of y. In other words, the generic lifetime 'a will get the concrete lifetime that is equal to the smaller of the lifetimes of x and y. Because we’ve annotated the returned reference with the same lifetime parameter 'a, the returned reference will also be valid for the length of the smaller of the lifetimes of x and y.
-- To warrant the above, here is code examples : 
-```rs
- /*
-     *Doesnt work
-     *let string1 = String::from("long string is long");
-     *let result;
-     *{
-     *    let string2 = String::from("xyz");
-     *    result = longest2(string1.as_str(), string2.as_str());
+
+    impl RealCoords for Coords<f32,f32>{ //Trait RealCoord is only implemented when T and U are f32
+        fn dist_from_origin(self:&Self) ->f32 {
+            return f32::from((self.x.powi(2)+self.y.powi(2)).sqrt())    
+        }
+    }
+    ```
+    > When u try and mix and match trait and type boudns rust goes mad, so lets at the moment consider only one bound at a time.
+    - With default definitions for trait functions: 
+    ```rs
+    struct Details<T,U>{
+        age : U,
+        id : T
+    }
+
+    trait PrettyPrint {
+        fn print_pretty(&self){ //with default
+            println!("No specific impl of PrettyPrint traitr :(");
+        }
+    }
+
+    impl<T,U> PrettyPrint for Coords<T,U>
+     where T: Debug,
+           U:Debug
+    { //Traits bounds with better syntax
+        fn print_pretty(&self) {
+            println!("( {:#?},{:#?} )",self.x,self.y);
+        }
+    }
+
+    impl<T,U> PrettyPrint for Details<T,U>{} //Fills in default
+    ```
+
+    - You can also return "any" type that impl a particular trait (You can only return one type from one function)
+    ```rs
+    fn return_type_with_printprettty_trait(age : i32 , id : i32) -> impl PrettyPrint{
+        Details{
+            age,
+            id
+        }
+    }
+
+    ```
+    - To bring all the above codes together: 
+    ```rs
+    fn main() {
+        println!("Hello, world!");
+        let coord1 = Coords{x:2.3,y:3.4};
+        let coord2 = Coords{x:3,y:4};
+        println!("distance : {}",coord1.dist_from_origin());
+        coord1.print_pretty();
+        //println!("distance : {}",coord2.dist_from_origin()); //doesnt work
+        coord2.print_pretty();
+        let deet1 = Details{ age:"32",id:"237" };
+        deet1.print_pretty();
+        let deet2 = return_type_with_printprettty_trait(32,1234);
+    }
+    ```
+    - So we had written a generic largest function in the Generics module (its commentd out there), which was a causing a problem that trait T has not implem std::cmp::PartialOrd was not impl, we are not equppied to solve this!
+
+
+    ## Lifetime and validating refrences : Not so complete
+    - Lifetimes are another generic, every reference in rust has its own lifetime. So what is this life times problem, well this really opens my eyes to the flaws is other languages : 
+    ```rs
+    fn main(){
+        let r;
+        //r has no value so cant print 
+        {
+            let x = 5;
+            r=&x;
+        }
+        println!("R : {}",r); //Will give error cus r is refrencing to x whos lifetime/scope was within the inner brackets.
+      
+    }
+
+    ```
+    In this case we simply say r lives longer than x.
+    - The borrow checker 
+    ![borrow](./borrow.png)
+    - First function with explicit life times : 
+    ```rs
+    /*
+     *
+     *Doesnt work!
+     *fn longest1(x:&str , y:&str) -> &str{
+     *    if x.len() > y.len(){
+     *        x
+     *    }else{
+     *        y
+     *    }
      *}
-     *println!("The longest string is {}", result);
+     *
      */
-    //In above code 'a is replaced with concrete life time of smaller life time that is (string2)
-    //but return result has a bigger lifetime and hence causes error.
 
-    //Works : 
-    let string1 = String::from("long string is long");
-    {
-        let string2 = String::from("xyz");
-        let result = longest2(string1.as_str(), string2.as_str());
-        println!("The longest string is {}", result);
+    fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
+        //Generic life times simply tell that the returned 
+        //value will live for as long as the two inputs
+        if x.len() > y.len(){
+            x
+        }else{
+            y
+        }
     }
-    //Life time of 'a is replaced with that of string2 but return result also has same life time
-    //and hence no error and vialotions.
-```
-- As long as the lifetime of the return value matches to that of the input variables, we are good to go! Such a concepts doesn't usually exists in other languages, The more your learn!
-- Lifetimes in structs :So far all struct we had seen where ownning the data entirely, so how do we store refrences?
-```rs
+    ```
+    - Note that by explicitly listing lifetimes we are not changing the lifes of any of the refrences or variables, we are simply and only relating these varaibles using lifetimes.
+    - Note : We don’t get in trouble as long are returns or any of the variables have life times that re surrounded by larger lifetimes. This doesn’t make much sense does it? Well from the book  : 
+    > Ver very very very imp Note : When we pass concrete references to longest, the concrete lifetime that is substituted for 'a is the part of the scope of x that overlaps with the scope of y. In other words, the generic lifetime 'a will get the concrete lifetime that is equal to the smaller of the lifetimes of x and y. Because we’ve annotated the returned reference with the same lifetime parameter 'a, the returned reference will also be valid for the length of the smaller of the lifetimes of x and y.
+    - To warrant the above, here is code examples : 
+    ```rs
+     /*
+         *Doesnt work
+         *let string1 = String::from("long string is long");
+         *let result;
+         *{
+         *    let string2 = String::from("xyz");
+         *    result = longest2(string1.as_str(), string2.as_str());
+         *}
+         *println!("The longest string is {}", result);
+         */
+        //In above code 'a is replaced with concrete life time of smaller life time that is (string2)
+        //but return result has a bigger lifetime and hence causes error.
 
-``` 
-> Idiomatic rust is rust code that is written with the help of closure and iterators and `functional programming constructs`
+        //Works : 
+        let string1 = String::from("long string is long");
+        {
+            let string2 = String::from("xyz");
+            let result = longest2(string1.as_str(), string2.as_str());
+            println!("The longest string is {}", result);
+        }
+        //Life time of 'a is replaced with that of string2 but return result also has same life time
+        //and hence no error and vialotions.
+    ```
+    - As long as the lifetime of the return value matches to that of the input variables, we are good to go! Such a concepts doesn't usually exists in other languages, The more your learn!
+    - Lifetimes in structs :So far all struct we had seen where ownning the data entirely, so how do we store refrences?
+    ```rs
 
-## Closure 
+    ``` 
+    > Idiomatic rust is rust code that is written with the help of closure and iterators and `functional programming constructs`
 
-- Closures are anonymous function that can be stored in a varaible.
-- Unlike function, closure can capture values of the current scope they are working in.
-- The need for clousures in Rust book is written in a very verycomplex way, to simply put it, closures are used where we need the result of a function in many places but want to call the function only once in the needed place.
-- Basic closures : 
-```rs
-  let first_closure = |var : String| {
-        sleep(Duration::from_secs(2));
-        println!("{}",var);
-    };
-```
-> Note : in the above we see the closure parameters have type annotation, in some cases it doesn’t need em.
+    ## Closure 
+
+    - Closures are anonymous function that can be stored in a varaible.
+    - Unlike function, closure can capture values of the current scope they are working in.
+    - The need for clousures in Rust book is written in a very verycomplex way, to simply put it, closures are used where we need the result of a function in many places but want to call the function only once in the needed place.
+    - Basic closures : 
+    ```rs
+      let first_closure = |var : String| {
+            sleep(Duration::from_secs(2));
+            println!("{}",var);
+        };
+    ```
+    > Note : in the above we see the closure parameters have type annotation, in some cases it doesn’t need em.
 - So as long as a closure is not called, the compiler throws an error of type annotations being needed, but once we call the function ones, the compiler "learns" the concrete types of closure. The example below fails to work : 
 ```rs
     let second_closure = |num|{
@@ -677,3 +675,7 @@ Other optimisation flags :
 - lto [false/true/thin/off] : controls LLVM linking time and optimisations, its beyond the scope currently for me hence, no details. 
 - panic [unwind/abort] : what to do on panic.
 - incremental [true/false] : whether to or not save more info to disk to reduce recompiliong times.
+
+
+
+
