@@ -662,6 +662,89 @@ fn main() {
 
 ``` 
 
+## Iterators
+- Basic usage of iterators : 
+```rs
+    let vector = vec![2,7,3,6,4,2,1];
+    let vec_iter = vector.iter(); 
+
+    for i in vec_iter{ //This operation moves vec_iter, we are inheritly calling into_iter()
+        println!("{}",i);
+    }
+    //println!("{}",vec_iter.next().unwrap()); //Due to which this doesnt work
+    let mut new_vec_iter = vector.iter(); //Has to be mut cus when calling next we are modifying the current valu in the iter
+    println!("{:?} {:?} {:?}",new_vec_iter.next(),new_vec_iter.next(),new_vec_iter.next()); //Usage of next method
+```
+>  Note the moving of iters ownership after being used up in a for loop, for lop calls the into_iter() function which takes ownership
+- Any iterators in rust should have an next method. In the std lib, next method returns an enum type of Option
+- Also, Note the mut on the iter we are calling next method. it is mutable cus interanlly the next value for the data structure is changed (meaning it it stored in a single variable)
+- Consumers of Iterators, Iterators (and generators) are lazy and do not execute the code unless we have some something using the result AKA consumers, some important consumers : 
+    - .sum()
+    - .collect()
+- Some common producers, these producers (adapters in rust terms) allows u to convert iterators into other forms as long as they have the Iterator trait implemented : 
+    - .map()
+    - .zip()
+    - .filter()
+- Code examples for some of the important consumers and producers : 
+    -
+```rs
+    //Example for consumers and adapter : 
+    let test_vec = vec![1,5,5,5,5,5,5];
+    let mut test_vec_iter = test_vec.iter();
+    println!("{}",test_vec_iter.next().unwrap());
+    let sum : i32 = test_vec_iter.sum();
+    println!("Sum without 0 index : {}",sum);
+    //what happens if we use map on a itetator that has been supposedly consumed entirely by sum()? 
+    //let sum2 : i32 = test_vec_iter.map(|x| x+1).sum(); //Funnny thing, we simply cant use a iter
+    //that has been moved, which sum() does
+    let mut test_vec_iter2 = test_vec.iter();
+    test_vec_iter2.next();
+    let sum2 : i32 = test_vec_iter2.map(|x| x+1).sum(); 
+    println!("Sum from map consuming a closure as well : {}",sum2);
+    //Rust's filter function works very similar to pythons : 
+    let test_vec2 = vec![1,2,3,4,5,6,7,8,9,10,5];
+    let multiples_of_5 : Vec<_> = test_vec2.iter().filter(|x| *x%5 == 0).collect();
+    println!("{:#?}",multiples_of_5);
+```
+- And finally, we get to create our own iterators with ofc the Iterator trait impl. As mentioned before, the only thing your iterator needs to have is the next method and every other adaptor and consumer that has Iterator trait can be used.
+```rs
+use std::thread::sleep;
+use std::time;
+
+
+struct Timer{
+    seconds_passed : i32
+}
+
+impl Timer{
+    fn new() -> Self{
+        Timer{ seconds_passed : 0 }
+    }
+}
+
+impl Iterator for Timer{
+    type Item = i32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        sleep(time::Duration::from_secs(1));
+        self.seconds_passed += 1;
+        Some(self.seconds_passed)
+    }
+}
+
+fn main(){
+    let mut timer1 = Timer::new();
+
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+}
+```
 ## Advanced usage of Cargo toolchains 
 
 - `cargo build --release` is used to invoke one of the four default profiles in the cargo build system. The four default profiles being dev [Simply `cargo build` ], release, test and bench.

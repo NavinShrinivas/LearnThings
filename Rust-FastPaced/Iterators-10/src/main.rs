@@ -1,3 +1,28 @@
+use std::thread::sleep;
+use std::time;
+
+
+struct Timer{
+    seconds_passed : i32
+}
+
+impl Timer{
+    fn new() -> Self{
+        Timer{ seconds_passed : 0 }
+    }
+}
+
+impl Iterator for Timer{
+    type Item = i32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        sleep(time::Duration::from_secs(1));
+        self.seconds_passed += 1;
+        Some(self.seconds_passed)
+    }
+}
+
+
 fn main() {
     println!("Hello, world!");
     let vector = vec![2,7,3,6,4,2,1];
@@ -28,4 +53,16 @@ fn main() {
     let test_vec2 = vec![1,2,3,4,5,6,7,8,9,10,5];
     let multiples_of_5 : Vec<_> = test_vec2.iter().filter(|x| *x%5 == 0).collect();
     println!("{:#?}",multiples_of_5);
+
+
+    let mut timer1 = Timer::new();
+
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
+    println!("waited so far for : {} seconds",timer1.next().unwrap());
 }
