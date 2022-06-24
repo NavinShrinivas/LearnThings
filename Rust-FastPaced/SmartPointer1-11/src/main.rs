@@ -22,5 +22,4 @@ fn main() {
     //recursive types in boxes 
     let psuedo_linked_list : List = Cons(12,Box::new(Cons(23,Box::new(Cons(34,Box::new(Nil))))));
     println!("{:#?}",psuedo_linked_list);
-
 }
