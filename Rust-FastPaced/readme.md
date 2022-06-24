@@ -1,5 +1,3 @@
-
-
 # Ultimate Rust cheat sheet : 
 
 ## Tuples  
@@ -759,4 +757,30 @@ Other optimisation flags :
 - overflow-checks [true/false] : control integer overflow checks
 - lto [false/true/thin/off] : controls LLVM linking time and optimisations, its beyond the scope currently for me hence, no details. 
 - panic [unwind/abort] : what to do on panic.
-- incremental [true/false] : whether to or not save more info to disk to reduce recompiliong times.
+- incremental [true/false] : whether to or not save more info to disk to reduce recompiliong times. 
+
+## Smart Pointers 
+
+- Not only act as pointers but also have additional metadata and capabilities. 
+- Here we will also see a smart pointer called `refrence counting` pointers, which allows multiple owner and keep track of these owners
+- Unlike refrences, smart pointers in most cases own the data they are pointing to :clown:. Infact we'ev already come across a few smart pointers, such as String and Vec [That is they have some data and some metadata].
+- Actually, thse "smart" pointers are just dumb old struct. So whats different here then? Its that these struct impl the Deref and Drop traits. We'ev seen drop traits before (), its has one method the "drop" method that is invoked when the data goes out of scope. Deref trait allows the struct allows the instance of the smart pointer (the struct) to act as a reference
+
+First up we'll see about Box type smart pointers :
+
+### Box smart pointers 
+- Box allows u to store data in heap rather on stack, instead the pointer to the heap location remains on the stack, similar to String (for which we stored in heap cus we did not know the size before hand).
+- Box's don’t have a performance overhead except storing on heap, similarly they don’t have a lot of methods to execute on the data. So where to use em? 
+    - When you don’t know the fixed size at compile time 
+    - large data whose ownership is to be changes, but making sure the data is not copied (say moving a very large string from main fn to another fn, copies take time on large heap data).
+    - When you want to deal with data that cares about implemented traits rather than type of data.
+- Using box to store on heap (use case 1):
+    - One place where we don’t know the size of a data is when the data is of recursive type
+    - We can see example in works by trying to build the cons data structure 
+```rs
+
+```
+The infinite size error in cons : 
+![image](./cons.png)
+The above error in the compiler, it suggests to use indirection, which just mean that instead of storing data directly on the stack, we store it in the heap and store its pointer in the stack. And hence Box type is a std type and just a pointer, Rust always knows how much space to allocate for Box.
+- Box implements both Deref and Drop traits, which allows it to work like pointers to data store in heap (for cleaning up outside scope).
