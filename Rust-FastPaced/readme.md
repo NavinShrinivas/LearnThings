@@ -807,3 +807,58 @@ The infinite size error in cons :
 ![image](./cons.png)
 The above error in the compiler, it suggests to use indirection, which just mean that instead of storing data directly on the stack, we store it in the heap and store its pointer in the stack. And hence Box type is a std type and just a pointer, Rust always knows how much space to allocate for Box.
 - Box implements both Deref and Drop traits, which allows it to work like pointers to data store in heap (for cleaning up outside scope).
+- How lifetime works with Box : 
+```rs
+    let new_value = 123; //stack allocated, doesnt matter even if it was heap allocated 
+    let box_new_value = Box::new(new_value);//does now Move new_value 
+    println!("{}",new_value); //valid
+    let another_new_value = String::from("test string");
+    let another_new_box = Box::new(another_new_value);
+    //println!("{}",another_new_value); //Invalid
+```
+> Note : to remember this more easily, clone on stack is fast and easy hence rust does it, clone on heap is hard and costly hence rust moves it.
+
+### The deref trait 
+- To understand this more easily, lets write our own smart pointer [Yaaaay, fun!].
+- Internally all * operators make a call to a deref() method which is part of Deref trait, and that inturn returns a refrence to owned value, meaning the * still has its worth and is nessasary(forgive my spelling). This we will see shortly, but for now the below code examples and image from rust book will make a lot of sense.
+```rs
+use std::ops::Deref;
+struct OurBox<T> (T); //A tuple struct
+
+struct OurBox2<T> (T); //A tuple struct
+
+impl<T> OurBox<T>{
+    fn new(x : T) -> Self{
+        OurBox(x)
+    }
+}
+
+impl<T> OurBox2<T>{
+    fn new(x : T) -> Self{
+        OurBox2(x)
+    }
+}
+
+impl<T> Deref for OurBox<T>{
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        return &self.0;
+    }
+}
+
+fn main(){
+    //refrences
+    let x = 5;
+    let y = &x;
+    println!("{}",y); //Refrence coersion, the same coersion doesnt work with assert eq
+    let new_box_type = OurBox::new(String::from("Hello world!"));
+    let new_box_type2 = OurBox2::new(String::from("Hello world!"));
+    assert_eq!(*new_box_type,String::from("Hello world!"));//Without deref the * wont work
+    //assert_eq!(*new_box_type2,String::from("Hello world!"));//wont work
+}
+```
+![image](./Box_refrences.png)
+
+my throughts : if the dref trait always returns a refrence(so as to not move the value), why bother doing *, call deref always. To work with this, rust does deref coersions : 
+
+- So like println takes only absoulute values not refrences, yet when we pass in a refrence without any defer opertor, we see it works just fine. This is Rust's smartness at play, So deref coersion can use the Deref trait to do this. This is called **Deref Coersions**
