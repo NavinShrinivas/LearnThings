@@ -862,3 +862,23 @@ fn main(){
 my throughts : if the dref trait always returns a refrence(so as to not move the value), why bother doing *, call deref always. To work with this, rust does deref coersions : 
 
 - So like println takes only absoulute values not refrences, yet when we pass in a refrence without any defer opertor, we see it works just fine. This is Rust's smartness at play, So deref coersion can use the Deref trait to do this. This is called **Deref Coersions**
+- Basically rust will keep calling the Deref trait as long as possible until a type needed is matched, if not found then throws error.
+- So what all can be coerced, we simply cant convert a non mutable one to mutable using coersion, that would be wrong. Hence the following is allowed : 
+    - from one non mut to antoher non mut 
+    - From one mut to another mut
+    - From one mut to another non mut
+### The drop trait : Cleaning up memory using the drop trait
+- Implementing Drop trait for OurBox : 
+```rs
+impl<T : std::fmt::Debug> Drop for OurBox<T>{
+    fn drop(&mut self) {
+        println!("Printed from drop trait as variable is out of scope : {:?}",self.0);
+    }
+}
+```
+> Note : Drop trait is only called for the original variable, not the refrences.
+- Simply put, we cant disable the the dorp trait that rust calls when the variable goes out of scope. But we can explicity call the std std::mem::drop function. So what if drop trait is called explicity and we cant stop the implicti call in scope end? Well simply rust remove the variable out of scope (Moves it and ends it) when the explicit call is made.
+- As we said before, std::mem::drop will move the value, meaning all the rules of moving exists entirely.
+### Refrence Counter!
+- These are extreamely useful and important Smart Pointer. These simply keep track of number of refrence to a given variabe.
+- We will use the Rc<T> type when we allocate a memory on the heap (remember Box was also for heap allocated space), and we want to access it from multiple places.

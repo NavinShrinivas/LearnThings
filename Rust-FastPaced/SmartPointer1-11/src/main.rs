@@ -15,11 +15,12 @@ use crate::List::{Cons,Nil};
 
 
 use std::ops::Deref;
-struct OurBox<T> (T); //A tuple struct
+#[derive(Debug)]
+struct OurBox<T : std::fmt::Debug> (T); //A tuple struct
 
 struct OurBox2<T> (T); //A tuple struct
 
-impl<T> OurBox<T>{
+impl<T : std::fmt::Debug> OurBox<T>{
     fn new(x : T) -> Self{
         OurBox(x)
     }
@@ -32,10 +33,15 @@ impl<T> OurBox2<T>{
 }
 
 
-impl<T> Deref for OurBox<T>{
+impl<T : std::fmt::Debug> Deref for OurBox<T>{
     type Target = T;
     fn deref(&self) -> &Self::Target {
         return &self.0;
+    }
+}
+impl<T : std::fmt::Debug> Drop for OurBox<T>{
+    fn drop(&mut self) {
+        println!("Printed from drop trait as variable is out of scope : {:?}",self.0);
     }
 }
 
@@ -56,12 +62,27 @@ fn main() {
     println!("{:#?}",psuedo_linked_list);
 
 
-    //refrences
+    //refrences and Deref trait
     let x = 5;
     let y = &x;
     println!("{}",y); //Refrence coersion, the same coersion doesnt work with assert eq
     let new_box_type = OurBox::new(String::from("Hello world!"));
+    let new_box_ref = &new_box_type;
+    //drop(new_box_type); //Wont work as new_box_type is considered moved here, hence all the rules of moving remains true
+    println!("{:?}",*new_box_ref);
     let new_box_type2 = OurBox2::new(String::from("Hello world!"));
     assert_eq!(*new_box_type,String::from("Hello world!"));//Without deref the * wont work
     //assert_eq!(*new_box_type2,String::from("Hello world!"));//wont work
+
+
+
+    //Deref coersion
+
+    //ref_str_printer(&new_box_type2); //Wont work 
+    ref_str_printer(&new_box_type);//Works
+}
+
+
+fn ref_str_printer(input : &str){
+    println!("Hello, {}",input);
 }
