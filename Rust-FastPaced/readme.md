@@ -78,7 +78,7 @@ impl DayType{
 let x: Option<i32> = Some(31);
 let _y = x+34; //Gives error, cant add Option and i32
 ```
-That is hwo rust makes sure that a null reference can never happen, Option is more like indicating that a variable can be of typer None, meaning before you can do any operation on it some check have to be done. If the variable is not of type option is can never be None. 
+That is how rust makes sure that a null reference can never happen, Option is more like indicating that a variable can be of type None, meaning before you can do any operation on it some check have to be done. If the variable is not of type option is can never be None. 
 > Note : None is analougous to NULL is other subject, but ofc better.
 - This is where we get `match` to help us, NOTE : match has to be exhaustive at all times or have _ arm. Using match with Options : 
 ```rs
@@ -212,7 +212,7 @@ let string2 : String = String::from("Hello world, twice!");
 let string3 = string2 + &string1; //ownership of string2 is transffered. string1 remains the same.
 println!("{}",string3);
 ```
-that thing with + sign is confusing, no? Well in the stad def the code is such that u can add a String with &str, but &string1 is a &String, how does it work then? Rust does something called defer coerce, it converts the &String to &str.
+that thing with + sign is confusing, no? Well in the std def the code is such that you can add a String with &str, but &string1 is a &String, how does it work then? Rust does something called defer coerce, it converts the &String to &str.
 > Notes : You can not add two String (String + String) in rust.
 Its this property that makes the usage of + for concat of String very weird, hence the format! macro.
 - format macro:
@@ -318,7 +318,7 @@ let p1 = Pairs{ x:12,y:23 }; //Works : Implicit definition of T is done by compi
         Err(E)
     }
     ```
-- Generics on imple, we can ue generic types in impl in very nice ways. You can restrict some method to when geneeic of some particula type. You can also make some methods available to eveything no matter the the generuc turned out be, like so:
+- Generics on imple, we can ue generic types in impl in very nice ways. You can restrict some method to when generic is of some particular type. You can also make some methods available to eveything no matter the the generic turns out be, like so:
 ```rs
 struct PairsHetro<T,U>{
     x:T,
@@ -352,7 +352,7 @@ fn main() {
     p4.pretty_print(); //Works
 }
 ```
-> Notes : trait check go into impl generics, type checks go into object generics (strucor enum), see in above example.
+> Notes : trait check go into impl generics, type checks go into object generics (struct, enum), see in above example.
 - Its not compulsory that them impl methods have to use the same genrics as their objects, they can introduce new generics thenselves, the examples for the book makes this clear, like sso : 
 ```rs
 struct Point<X1, Y1> {
@@ -526,9 +526,6 @@ fn longest2<'a>(x:&'a str , y:&'a str) -> &'a str{
 ```
 - As long as the lifetime of the return value matches to that of the input variables, we are good to go! Such a concepts doesn't usually exists in other languages, The more your learn!
 - Lifetimes in structs :So far all struct we had seen where ownning the data entirely, so how do we store refrences?
-```rs
-
-``` 
 > Idiomatic rust is rust code that is written with the help of closure and iterators and `functional programming constructs`
 
 ## Closure 

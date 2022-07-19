@@ -1,7 +1,7 @@
 
 fn main() {
     //OWNERSHIP
-    //
+
     println!("Hello, world!");
     let mut st : String = String::from("Hello, world!");
     let str_new : String = String::new();
@@ -13,14 +13,14 @@ fn main() {
     let mut s2 = s1.clone();
     //s1.push_str("Hello"); //Not valid as s1 not mut
     //Image 1 of readme shows this in a nice way 
-    //Now when we reach end of this function both s and s2 are trying to free the same memeory in
+    //Now when we reach end of this function both st and s1 are trying to free the same memeory in
     //the heap, this is called double free error. To solve this Rust no longer considers s to be
     //valid!
-    //println!("{:?}",s); //Gives error of s being moved. And because of this shallow copies are
+    //println!("{:?}",st); //Gives error of s being moved. And because of this shallow copies are
     //called are "moves in rust!"
     //If we want to deep copy we use the clone method of heap allocated vars. If a type implements
     //the "Copy" trait its variables are valid even after and copy (deep and shallow are same in
-    //this case)
+    //this case) [That is, if there is Copy trait, clone is called even when we do shallow copy]
     //If the type has "Drop" train implmented, it wont let us implement a Copy trait
     //Just like that, passing variables in and out of functions cause a move
     //Thus moving variables in and out of functions seem quite tedious, hence we have refrences to

@@ -39,8 +39,8 @@ impl PairsHetro<i32,f32>{
     }
 } 
 
-//In all trait check happen on generics going into imp and type checks happen on generics going into
-//the object (struct or enu or whatev)
+//In all trait check happen on generics going into impl and type checks happen on generics going into
+//the object (struct or enum or whatev)
 
 
 fn main() {
