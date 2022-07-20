@@ -10,9 +10,7 @@ struct Cacher<T,V>{
     value : Option<V>
 }
 
-impl<T> Cacher<T,u32>
-where
-    T : Fn(u32) -> u32,
+impl<T : Fn(u32)->u32> Cacher<T,u32>
     //Note Fn is a trait, fn is the usual keyword
     {
         fn new(calculation : T) -> Cacher<T,u32>{

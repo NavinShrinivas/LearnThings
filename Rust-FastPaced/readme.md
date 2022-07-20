@@ -601,7 +601,7 @@ fn main(){
 ```
 To make a little more sense to usage of closures in rust : 
 ![image](./closures.png)
-- Now we did see that the closure simply stores the result from the first argument that were passed into the "get_value", what if I wanna call the function is a new args is passed, else return the stored value? Here we can start using HashMaps!
+- Now we did see that the closure simply stores the result from the first argument that were passed into the "get_value", what if I wanna call the function if a new args is passed, else return the stored value? Here we can start using HashMaps!
 Also here I write the cacherin such a way the input args and output args can be anything (can even be made diff) : 
 ```rs
 struct BetterCacher<T,V>{
