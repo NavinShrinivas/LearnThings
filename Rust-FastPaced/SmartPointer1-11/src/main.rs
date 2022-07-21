@@ -59,6 +59,8 @@ fn main() {
 
     //recursive types in boxes 
     let psuedo_linked_list : List = Cons(12,Box::new(Cons(23,Box::new(Cons(34,Box::new(Nil))))));
+    //Do note, Nil here is simply a enum type and has nothing to do with NULL or undefined or any
+    //such concepts
     println!("{:#?}",psuedo_linked_list);
 
 
@@ -80,6 +82,13 @@ fn main() {
 
     //ref_str_printer(&new_box_type2); //Wont work 
     ref_str_printer(&new_box_type);//Works
+
+    //Refrence counting
+    let list_a : List = Cons(5,Box::new(Cons(10,Box::new(Nil))));
+    let list_b : List = Cons(3,Box::new( list_a )); //Transfers ownership of a 
+    //println!("{:?}",list_a); //Hence, this wont work
+    //let list_c : List = Cons(4,Box::new( list_a )); //And neither will this
+
 }
 
 

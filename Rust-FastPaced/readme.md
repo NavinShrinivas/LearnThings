@@ -879,3 +879,7 @@ impl<T : std::fmt::Debug> Drop for OurBox<T>{
 ### Refrence Counter!
 - These are extreamely useful and important Smart Pointer. These simply keep track of number of refrence to a given variabe.
 - We will use the Rc<T> type when we allocate a memory on the heap (remember Box was also for heap allocated space), and we want to access it from multiple places.
+> Note : Rc<T> the generic Refrence coutngin type we will see here is only for single threaded senarios.
+- So now lets see where 2 lists have a common ending, like so :
+![image_rc](./rc_list.png)
+- How do we do this? Code :
