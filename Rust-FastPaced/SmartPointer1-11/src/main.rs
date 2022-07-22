@@ -11,8 +11,17 @@ enum List{
     Cons(i32,Box<List>), //This works!
     Nil
 }
-use crate::List::{Cons,Nil};
 
+use std::rc::Rc;
+#[derive(Debug)]
+enum BetterList{
+    Cons(i32,Rc<BetterList>),
+    Nil
+}
+
+use crate::List::{Cons,Nil};
+use crate::BetterList::{Cons as BLCons, Nil as BLNil};
+//BL standing for betterList cus we have two Cons and 2 Nil types in this file 
 
 use std::ops::Deref;
 #[derive(Debug)]
@@ -83,14 +92,42 @@ fn main() {
     //ref_str_printer(&new_box_type2); //Wont work 
     ref_str_printer(&new_box_type);//Works
 
+
     //Refrence counting
     let list_a : List = Cons(5,Box::new(Cons(10,Box::new(Nil))));
     let list_b : List = Cons(3,Box::new( list_a )); //Transfers ownership of a 
     //println!("{:?}",list_a); //Hence, this wont work
     //let list_c : List = Cons(4,Box::new( list_a )); //And neither will this
+    
+
+
+    let list_a : Rc<BetterList> = Rc::new(BLCons(5,Rc::new(BLCons(10,Rc::new(BLNil)))));
+    move_value_check(Rc::clone(&list_a));
+    let list_b : BetterList = BLCons(3,Rc::clone( &list_a )); 
+    println!("from main {:?}",list_a); 
+    let list_c : BetterList = BLCons(4,Rc::clone( &list_a )); 
+    println!("Full list : {:?}",list_c);
+
+    //seeing refrence count in action
+    let a : Rc<BetterList> = Rc::new(BLCons(5,Rc::new(BLCons(10,Rc::new(BLNil)))));
+    println!("Just after creating a : {}",Rc::strong_count(&a));
+    move_value_check(Rc::clone(&list_a));
+    println!("Just after creating trying to move value : {}",Rc::strong_count(&a));
+    let b : BetterList = BLCons(3,Rc::clone( &a ));
+    println!("Just after creating b : {}",Rc::strong_count(&a));
+    let c : BetterList = BLCons(4,Rc::clone( &a )); 
+    println!("Just after creating c : {}",Rc::strong_count(&a));
+    println!("Full list : {:?}",list_c);
+
+
 
 }
 
+fn move_value_check(waste : Rc<BetterList>){
+    println!(" from value mover {:?}", waste);
+    //even tho a reference was sent wrapped in Rc::clone, this function will NEVER KNOW THAT!!!
+    return
+}
 
 fn ref_str_printer(input : &str){
     println!("Hello, {}",input);

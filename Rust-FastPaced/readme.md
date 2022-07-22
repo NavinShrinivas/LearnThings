@@ -876,10 +876,86 @@ impl<T : std::fmt::Debug> Drop for OurBox<T>{
 > Note : Drop trait is only called for the original variable, not the refrences.
 - Simply put, we cant disable the the dorp trait that rust calls when the variable goes out of scope. But we can explicity call the std std::mem::drop function. So what if drop trait is called explicity and we cant stop the implicti call in scope end? Well simply rust remove the variable out of scope (Moves it and ends it) when the explicit call is made.
 - As we said before, std::mem::drop will move the value, meaning all the rules of moving exists entirely.
+
 ### Refrence Counter!
 - These are extreamely useful and important Smart Pointer. These simply keep track of number of refrence to a given variabe.
 - We will use the Rc<T> type when we allocate a memory on the heap (remember Box was also for heap allocated space), and we want to access it from multiple places.
 > Note : Rc<T> the generic Refrence coutngin type we will see here is only for single threaded senarios.
 - So now lets see where 2 lists have a common ending, like so :
 ![image_rc](./rc_list.png)
-- How do we do this? Code :
+- How do we do this? Code, the below example is truly well written :
+```rs
+#[derive(Debug)]
+enum List{
+    /*
+     *Cons(i32,List),//Wont work, this is cus rust cant figure out how much space to allocate for List
+     *in the stack, hence its time to start using the heap.
+     */
+    Cons(i32,Box<List>), //This works!
+    Nil
+}
+
+use std::rc::Rc;
+#[derive(Debug)]
+enum BetterList{
+    Cons(i32,Rc<BetterList>),
+    Nil
+}
+
+use crate::List::{Cons,Nil};
+use crate::BetterList::{Cons as BLCons, Nil as BLNil};
+//BL standing for betterList cus we have two Cons and 2 Nil types in this file 
+
+
+fn main(){
+
+    //Refrence counting
+    let list_a : List = Cons(5,Box::new(Cons(10,Box::new(Nil))));
+    let list_b : List = Cons(3,Box::new( list_a )); //Transfers ownership of a 
+    //println!("{:?}",list_a); //Hence, this wont work
+    //let list_c : List = Cons(4,Box::new( list_a )); //And neither will this
+    
+    let list_a : Rc<BetterList> = Rc::new(BLCons(5,Rc::new(BLCons(10,Rc::new(BLNil)))));
+    move_value_check(Rc::clone(&list_a));
+    let list_b : BetterList = BLCons(3,Rc::clone( &list_a )); //Transfers ownership of a 
+    println!("from main {:?}",list_a); //Hence, this wont work
+    let list_c : BetterList = BLCons(4,Rc::clone( &list_a )); //And neither will this
+    println!("Full list : {:?}",list_c);
+
+}
+fn move_value_check(waste : Rc<BetterList>){
+    println!(" from value mover {:?}", waste);
+    //even tho a reference was sent wrapped in Rc::clone, this function will NEVER KNOW THAT!!!
+    return
+}
+
+
+```
+- Often times we do .clone() method to make deep copies of variables, this is because we are scared that the value might be dropped or moved before when the refrence is needed but this in turn gives us a time penalty. Rc::clone doesn’t actually do a deep copy, it simply increase a count that keeps track of number fo refrences to a variable, the compiler makes sure the value isnt cleared as long the refrence count is not 0. 
+- To actually see this reference count in action : 
+```rs
+    //Note : this example is tied up with functions from previous one
+    //seeing refrence count in action
+    let a : Rc<BetterList> = Rc::new(BLCons(5,Rc::new(BLCons(10,Rc::new(BLNil)))));
+    println!("Just after creating a : {}",Rc::strong_count(&a));
+    move_value_check(Rc::clone(&list_a));
+    println!("Just after creating trying to move value : {}",Rc::strong_count(&a));
+    let b : BetterList = BLCons(3,Rc::clone( &a ));
+    println!("Just after creating b : {}",Rc::strong_count(&a));
+    let c : BetterList = BLCons(4,Rc::clone( &a )); 
+    println!("Just after creating c : {}",Rc::strong_count(&a));
+    println!("Full list : {:?}",list_c);
+```
+- Thought Rc smart pointer Rust allows multiple functions/vriables to have ownership of a single value, but Rc allows only readable refrence to all these owners. If rust allowe mutable refrence to all the owners then we would have to run into a whole array of problem. But alas, we humans always want to make chan ges, hence in the next smart pointer we will see RefCell<T> which is used in conjunction to Rc<T> to give mutable refrences [Do note : RefCell is not giving mutability, but instead something called "interior mutability"].
+
+### RefCell Smart Pointers 
+- Refcell allow "interior mutability" to immutable refrences. Now, what is this fancy term? Simply according to borrowing rules (enforced by the compiler during compile time) doesn’t allow us to modify values using an inmutable refrence. To circumvent this, the 'pattern' uses some `unsafe code` inside the data structure to make it happen.
+- Interior mutability pattern is once again only for single threded applications, but this can be used only when the developer is sure all borrowing rules are followed during run time as the compiler can simply not check this.
+- For Box types Borrow rules were enforced at compile time if broken we don’t get binaries and get compile time error. For refcells its enforced at compile time and get panics if not followed. 
+- To understand this more easily, the below gives an error : 
+```rs
+let x = 5;
+let mut_ref = &mut x;
+```
+This is obvioulsy not right as per borrow rules, but it will be useful to be able to edit the data using one of the data types methods but be immutable outside the types methods. This is exactly what we can do wuth RefCells
+- A use case for refcell behaviour, often times we give different types into function so see their behaviour, in this case we use something called a `test double` which is an object that will also store all the changes that happenes to it during the test, this helps us debug the code with much more precision. Rust doesn't have objects per se, but we can def make a struct to do the same for us.
