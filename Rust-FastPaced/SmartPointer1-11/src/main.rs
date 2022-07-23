@@ -19,6 +19,7 @@ enum BetterList{
     Nil
 }
 
+
 use std::cell::RefCell;
 #[derive(Debug)]
 enum BetterBetterList{
@@ -30,6 +31,22 @@ use crate::List::{Cons,Nil};
 use crate::BetterList::{Cons as BLCons, Nil as BLNil};
 use crate::BetterBetterList::{Cons as BLBLCons, Nil as BLBLNil};
 //BL standing for betterList cus we have two Cons and 2 Nil types in this file 
+
+#[derive(Debug)]
+enum CyclicList{
+    Cons(i32,RefCell<Rc<CyclicList>>), //basically RefCell mean that its of type RefCell and any one can point to it mutably
+                                       //Rc means it holds a type Rc refrence
+    Nil,
+}
+
+impl CyclicList{
+    fn tail(&self) -> Option<&RefCell<Rc<CyclicList>>>{
+        match self{
+            CyclicList::Cons(_,item) => Option::Some(item),
+            _ => None
+        }
+    }
+}
 
 use std::ops::Deref;
 #[derive(Debug)]
@@ -144,6 +161,19 @@ fn main() {
     *value.borrow_mut()=50;
     println!("list : {:?}",c);
     //So now we can have multiple mutable refrences and multiple imut refrences (like ownership)!!
+    
+
+    //Cyclic refrence 
+    let a = Rc::new(CyclicList::Cons(5,RefCell::new(Rc::new(CyclicList::Nil))));
+
+    let b = Rc::new(CyclicList::Cons(10,RefCell::new(Rc::clone(&a))));
+
+    if let Some(link) = a.tail(){
+        *link.borrow_mut()=b;
+    }
+
+    println!("a next item = {:?}", a.tail()); //Causes overflow
+                                              //Think over this for some time
 
 
 }

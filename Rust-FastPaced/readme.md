@@ -963,5 +963,58 @@ This is obvioulsy not right as per borrow rules, but it will be useful to be abl
 - We had seen the Rc<T> SP's before that allow multiple "owner" usign imutable refrences, but if the Rc hold RefCells we can have multiple mutable refrences.
 - So to do this section right, first go read through SmartPointer module till Rc then move on to MessageApiLimiter and later to RefCells with Rc in SmatPointer module.
 
+
+> To make it easier and to remember for a long time : What ever is wrapped in RefCell can be modified easily, whatever is there in Rc can owned by multiple vars.
+
+
 ### The problem with refcells 
+
 - They cause memory leaks, using Rc and RefCell it is possible to create refrences where they each point to each other causing memory cycles and and never be cleanred from memory, this is called memory leak.
+u Let's see a live example of where this happens : 
+```rs
+##[derive(Debug)]
+enum CyclicList{
+    Cons(i32,RefCell<Rc<CyclicList>>), //basically RefCell mean that its of type RefCell and any one can point to it mutably
+                                       //Rc means it holds a type Rc refrence
+    Nil,
+}
+
+impl CyclicList{
+    fn tail(&self) -> Option<&RefCell<Rc<CyclicList>>>{
+        match self{
+            CyclicList::Cons(_,item) => Option::Some(item),
+            _ => None
+        }
+    }
+}
+
+[derive(Debug)]
+enum CyclicList{
+    Cons(i32,RefCell<Rc<CyclicList>>), //basically RefCell mean that its of type RefCell and any one can point to it mutably
+                                       //Rc means it holds a type Rc refrence
+    Nil,
+}
+
+impl CyclicList{
+    fn tail(&self) -> Option<&RefCell<Rc<CyclicList>>>{
+        match self{
+            CyclicList::Cons(_,item) => Option::Some(item),
+            _ => None
+        }
+    }
+}
+fn main(){
+   //Cyclic refrence 
+    let a = Rc::new(CyclicList::Cons(5,RefCell::new(Rc::new(CyclicList::Nil))));
+
+    let b = Rc::new(CyclicList::Cons(10,RefCell::new(Rc::clone(&a))));
+
+    if let Some(link) = a.tail(){
+        *link.borrow_mut()=b;
+    }
+
+    println!("a next item = {:?}", a.tail()); //Causes overflow
+                                              //Think over this for some time
+}
+```
+a is a list to which b points, we later make a also point to b : a -> b -> a -> b -> a -> b -> a -> ...

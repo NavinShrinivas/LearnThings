@@ -6,7 +6,6 @@ use std::cell::RefCell;
 pub trait Message{
     fn push(self: &Self,new_str : String);
 }
-
 struct Messenger{
     pushed_content : RefCell<Vec<String>>
     //lets assume that whatever comes into this vector is actually pushed through the api.
@@ -17,6 +16,7 @@ impl Messenger{
         Messenger { pushed_content: RefCell::new(Vec::new())}
     }
 }
+
 
 impl Message for Messenger{
     fn push(self: &Self, new_str : String) {
@@ -31,7 +31,6 @@ impl Message for Messenger{
 fn main() {
     let messenger = Messenger::new();
     let mut limit_tracker =  limiter::UsageLimiter::new(&messenger,100);
-
     //even so basically messenger is imutable and mutable to everyone as long as they hold true to
     //the borrow rules!
 
