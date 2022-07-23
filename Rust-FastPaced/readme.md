@@ -963,3 +963,5 @@ This is obvioulsy not right as per borrow rules, but it will be useful to be abl
 - We had seen the Rc<T> SP's before that allow multiple "owner" usign imutable refrences, but if the Rc hold RefCells we can have multiple mutable refrences.
 - So to do this section right, first go read through SmartPointer module till Rc then move on to MessageApiLimiter and later to RefCells with Rc in SmatPointer module.
 
+### The problem with refcells 
+- They cause memory leaks, using Rc and RefCell it is possible to create refrences where they each point to each other causing memory cycles and and never be cleanred from memory, this is called memory leak.
