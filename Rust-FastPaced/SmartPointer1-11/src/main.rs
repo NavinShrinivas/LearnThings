@@ -19,8 +19,16 @@ enum BetterList{
     Nil
 }
 
+use std::cell::RefCell;
+#[derive(Debug)]
+enum BetterBetterList{
+    Cons(Rc<RefCell<i32>>,Rc<BetterBetterList>),
+    Nil
+}
+
 use crate::List::{Cons,Nil};
 use crate::BetterList::{Cons as BLCons, Nil as BLNil};
+use crate::BetterBetterList::{Cons as BLBLCons, Nil as BLBLNil};
 //BL standing for betterList cus we have two Cons and 2 Nil types in this file 
 
 use std::ops::Deref;
@@ -119,6 +127,23 @@ fn main() {
     println!("Just after creating c : {}",Rc::strong_count(&a));
     println!("Full list : {:?}",list_c);
 
+
+    //RefCell with Rc
+    println!("multiple Mutable refrences use rc and recell \n");
+    let value = Rc::new(RefCell::new(10));
+    let a : Rc<BetterBetterList> = Rc::new(BLBLCons(Rc::new(RefCell::new(10)),Rc::new(BLBLCons(Rc::clone(&value),Rc::new(BLBLNil)))));
+    println!("Just after creating a : {}",Rc::strong_count(&a));
+    let b : BetterBetterList = BLBLCons(Rc::new(RefCell::new(3)),Rc::clone( &a ));
+    println!("Just after creating b : {:?}",b);
+    let c : BetterBetterList = BLBLCons(Rc::new(RefCell::new(4)),Rc::clone( &a )); 
+    println!("Just after creating c : {:?}",c);
+
+    println!("After modifying usinf 2 mutable refrences : \n");
+
+    *value.borrow_mut()=20;
+    *value.borrow_mut()=50;
+    println!("list : {:?}",c);
+    //So now we can have multiple mutable refrences and multiple imut refrences (like ownership)!!
 
 
 }
