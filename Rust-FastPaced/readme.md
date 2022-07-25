@@ -1018,3 +1018,160 @@ fn main(){
 }
 ```
 a is a list to which b points, we later make a also point to b : a -> b -> a -> b -> a -> b -> a -> ...
+
+## FEARLESS CONCURRENCY 
+
+Here we reach the most awaite module of all time, Concurrency in rust....Be it any application in todays world, making use of multi thread architechture is the norm, hence this modules holds high value. PERIOD. The rust dev figured that the type systems, borrowing and ownership are all powerfull tools that can also help with concurrency. Using previously discussed problems, most of concurreny problem have been transffered to compile time rather than running into issues reproducing them at run time.
+
+> Note : this is not to be confused with Tokio, Tokio is an asynchronous runtime, which we will cover shortly!
+
+### Threads
+
+- Rust follows 1:1 threading wrt to os threads.
+- Simply to create new threads, we use `thread::spawn`, this "function" takes in a closure that contains code to be executed.
+```rs
+use std::thread;
+use std::time;
+
+fn main() {
+
+    //Basic example
+    let thread_func = ||{
+        for i in 1..20{
+            thread::sleep(time::Duration::from_millis(2));
+            println!("{} from spwaned thread",i);
+        }
+    };
+
+    thread::spawn(thread_func);
+    for i in 1..20{
+        thread::sleep(time::Duration::from_millis(2));
+        println!("{} from main thread",i);
+    }
+
+
+}
+```
+- in golang we make use of waitgroups to make sure that the main thread does not end before the child threads are done executing, here we use `join` to get the same behaviour. We can simply solve this problem by storing the return value of a thread::spawn in an variable in the main thread.
+```rs
+    let thread_func = ||{
+        for i in 0..30{
+            thread::sleep(time::Duration::from_millis(2));
+            println!("{} from spwaned thread",i);
+        }
+    };
+
+    let handle = thread::spawn(thread_func);
+    for i in 0..20{
+        thread::sleep(time::Duration::from_millis(2));
+        println!("{} from main thread",i);
+    }
+    handle.join().unwrap();
+```
+- What would happen if the join() method was called before the main threads for loop? Simpl the main function would have waited for the spwaned thread to finish before it go ahead with second for loop.
+- When you first saw closures going into thread, your mind should have gone to being able to capture main threads variables, as closures can do that...easily. But this isnt that straight forward in threading. This is because the the spawned thread(the closure) amy outlive the main function (which owns the captured value), if so the captured value will be dropped and a nill deref would happen, Something like this : 
+```rs
+use std::thread;
+
+fn main() {
+    let v = vec![1, 2, 3];
+
+    let handle = thread::spawn(|| {
+        println!("Here's a vector: {:?}", v);
+    });
+
+    drop(v); // oh no!
+
+    handle.join().unwrap();
+}
+```
+Hence Rust exepects u to move any value u wish to capture from the main thread. Like so :
+```rs
+let mut test_hash : HashMap<_,_> = HashMap::new();
+test_hash.entry(String::from("Hello")).or_insert(0);
+
+let thread_fn_2 = move ||{
+    let res = test_hash.entry(String::from("Hello")).or_insert(0);
+    *res +=1;
+    println!("modded value : {}",res);
+};
+let thread_handle_2 = thread::spawn(thread_fn_2);
+thread_handle_2.join().unwrap();
+//println!("{:?}",test_hash); //wont work
+```
+### Message passing between threads
+- In rust we comm b/w thread by use of channels, it has two parts, the trasmitter and the receiver. A channel is said to be closed if either parts of the channels are `dropped`.
+- we create channels using "sync::mpsc" library where mpsc stands for `multiple producers single consumer`.
+```rs
+ let (tx,rx) = mpsc::channel();
+thread::spawn(move ||{
+    let test_str = String::from("hi deer");
+    tx.send(test_str).unwrap();
+    drop(tx);
+});
+println!("got : {}",rx.recv().unwrap()); //recv is a blocking function
+```
+> Do note : recv is a blocking function alternative is try_recv which is not a blocking function.
+- The value sent in a .send() method is moved.
+- To do something like we do in golang (Note : My intuition says that using rx as an iterator is calling try_recv) :
+```rs
+let(tx2,rx2) = mpsc::channel();
+let sender = move ||{
+    let mut generator = rand::thread_rng();
+    loop{
+        tx2.send(generator.gen_range(0.0..10000.0)).unwrap();     
+        thread::sleep(time::Duration::from_secs(1));
+    }
+};
+let reciver = move ||{
+    loop{
+        for item in &rx2 {
+            println!("Got  : {:?}",item);
+        }
+    }
+};
+let sender_handle = thread::spawn(sender);
+thread::spawn(reciver);
+sender_handle.join().unwrap();
+```
+> Note : Usually we don’t have to interate over refrence of rx, but as here we have an infitine for loop that moves the value we have a refrence (Note : Some times its good to do what the rust compiler says even if it doesn’t have much logic).
+- Multiple sender, in the rust book they use the clone method. But having learnt Rc just recently, it would be a crime not use it. Hence the deviation, AHHHHHHHH STUPID ME....i my self havve types before Rc is only for single threaded cases :facepalm:. Hence .clone() method is must.
+```rs
+let (tx, rx) = mpsc::channel();
+
+let tx1 = tx.clone();
+thread::spawn(move || {
+    let vals = vec![
+        String::from("hi"),
+        String::from("from"),
+        String::from("the"),
+        String::from("thread"),
+    ];
+
+    for val in vals {
+        tx1.send(val).unwrap();
+        thread::sleep(Duration::from_secs(1));
+    }
+});
+
+thread::spawn(move || {
+    let vals = vec![
+        String::from("more"),
+        String::from("messages"),
+        String::from("for"),
+        String::from("you"),
+    ];
+
+    for val in vals {
+        tx.send(val).unwrap();
+        thread::sleep(Duration::from_secs(1));
+    }
+});
+
+for received in rx {
+    println!("Got: {}", received);
+}
+```
+- With that we see how threads communicate with each other using channels, but it isnt the only way. Next up :
+### Shared State Concurrency
+
