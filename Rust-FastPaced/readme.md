@@ -1174,4 +1174,17 @@ for received in rx {
 ```
 - With that we see how threads communicate with each other using channels, but it isnt the only way. Next up :
 ### Shared State Concurrency
-
+- People who work with channels often warn others against using shared state. This is cus shares state concurrency is more like multiple owners where the owners can even sync among themselves. 
+- First up Mutex  : 
+```rs
+let first_mutex =  Mutex::new(String::from("Hello worlddd"));
+println!("before modded through an mutex : {:?}",first_mutex);
+let mut refrence = first_mutex.lock().unwrap();
+*refrence = format!("{} {}",refrence,&String::from(" Another stringgggg"));
+println!("aqquired lock : {:?} ",first_mutex);
+drop(refrence); //Dropping the MutexGuard manually, not a nessacity.
+println!("after dropping aqquired guard : {:?} ",first_mutex);
+```
+Unlike golang or other languages, mutex actually own the valu where, they are not simply a free lock we learn in OS, here they own the value, they always almost own the value. To aquire the lock we use .lock() methods (which panics if any other thread which holds the lock panics) and if successful it returns back an MUTABLE REFRENCE (MutexGuard) to the value held within. So what happens to releasing a lock?
+- Well the MutexGuard type is a smart pointer and has Deref traits (*refrence hence works) that returns the inner value and also has Drop trait that automatically releases the lock when it falls out of scope.
+- But we still can share stuff between two thread, remember Rc are not safe to use in multi thread? Hence we have a new Smart Pointer : Arc (Atomic Refrence Counting). But instead of using it the context of Mutex locks, i will be using it to share tx (trasmitter) across multiple threads. Actually no, channels can simply not be shared between threads, lets usin Arc with Mutex locks only.

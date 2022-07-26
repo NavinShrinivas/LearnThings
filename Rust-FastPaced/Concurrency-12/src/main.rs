@@ -3,6 +3,7 @@ use std::time;
 use std::collections::HashMap;
 use std::sync::mpsc;
 use rand::prelude::*;
+use std::sync::{Mutex, Arc};
 
 fn main() {
 
@@ -96,4 +97,15 @@ fn main() {
     for received in rx {
         println!("Got: {}", received);
     }
-}
+
+    let first_mutex =  Mutex::new(String::from("Hello worlddd"));
+    println!("before modded through an mutex : {:?}",first_mutex);
+    let mut refrence = first_mutex.lock().unwrap();
+    *refrence = format!("{} {}",refrence,&String::from(" Another stringgggg"));
+    println!("aqquired lock : {:?} ",first_mutex);
+    drop(refrence); //Dropping the MutexGuard manually, not a nessacity.
+    println!("after dropping aqquired guard : {:?} ",first_mutex);
+
+    //Arc
+    //
+   }
