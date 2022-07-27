@@ -107,5 +107,13 @@ fn main() {
     println!("after dropping aqquired guard : {:?} ",first_mutex);
 
     //Arc
-    //
-   }
+    let mod_mutex = Arc::new( Mutex::new(0) );
+    for _ in 0..11{
+        let arc_clone = Arc::clone(&mod_mutex);
+        let _ = thread::spawn(move ||{
+            let mut mutex_ref = arc_clone.lock().unwrap();
+            *mutex_ref+=1;
+        });
+    }
+    println!("Unlokced Mutes rep  [With arc] : {:?}",mod_mutex);
+}

@@ -1188,3 +1188,25 @@ println!("after dropping aqquired guard : {:?} ",first_mutex);
 Unlike golang or other languages, mutex actually own the valu where, they are not simply a free lock we learn in OS, here they own the value, they always almost own the value. To aquire the lock we use .lock() methods (which panics if any other thread which holds the lock panics) and if successful it returns back an MUTABLE REFRENCE (MutexGuard) to the value held within. So what happens to releasing a lock?
 - Well the MutexGuard type is a smart pointer and has Deref traits (*refrence hence works) that returns the inner value and also has Drop trait that automatically releases the lock when it falls out of scope.
 - But we still can share stuff between two thread, remember Rc are not safe to use in multi thread? Hence we have a new Smart Pointer : Arc (Atomic Refrence Counting). But instead of using it the context of Mutex locks, i will be using it to share tx (trasmitter) across multiple threads. Actually no, channels can simply not be shared between threads, lets usin Arc with Mutex locks only.
+```rs
+let mod_mutex = Arc::new( Mutex::new(0) );
+for _ in 0..11{
+    let arc_clone = Arc::clone(&mod_mutex);
+    let _ = thread::spawn(move ||{
+        let mut mutex_ref = arc_clone.lock().unwrap();
+        *mutex_ref+=1;
+    });
+}
+println!("Unlokced Mutes rep  [With arc] : {:?}",mod_mutex);
+```
+> To note : The mutex lock is NOT mutable, but it give a mutable refrence when we need it...meaning it is interiorly mutable. 
+- There are few places where Rust simply can't help u from making mistakes, so far we'ev seen two : 
+    - One is where we had Rc along with RefCell where we got a loop of refrences 
+    - And second is Mutex lock in which Rust has not give a ironclad way to avoid deadlock, as a progammer its your repomsibility.
+
+### Sync and Send, Note the capitalisation
+- `Send` trait indicates that the ownership of can be transffered between threads. "ALMOST" every rust type has impl the Send traint, alto there exists some exceptions : 
+    - Rc<T>
+    - raw pointers (discussed later)
+- `Sync` trait indicates that the type is safe to be refrenced from multiple threads. In other words : Any type T is Sync if &T (imu ref)has Send implemented. Rc<T> is not Sync.
+- All types that are made of Send and Sync are also Send and Sync. This makes the need for ability to impl these two traits, this is also cus doing so causes mem leaks [Part of Unsafe Rust]. With this we can end Concurrency and we'll see more of this in our upcoming project :)
